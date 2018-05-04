@@ -26,7 +26,15 @@ class ofApp : public ofBaseApp{
     // ATLAS SETUP //////////////////////////
     TextureAtlasCreator atlasCreator;
     TextureAtlasDrawer atlasManager;
+    bool atlasLoaded = false;
+    bool createAtlas = false;
+    vector<string> filesToDraw;
     
     // SEQUENCEMANAGER SETUP //////////////////////////
     ofxSequenceManager *seqMan;
+    
+    // CALLBACKS //////////////////////////
+    void onAtlasCreationFinished(bool & arg);
+    void onAtlasesLoaded(bool &);
+    
 };
