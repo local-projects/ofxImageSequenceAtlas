@@ -64,6 +64,7 @@ void ofxImageSequenceAtlas::playSequence(int _startFrame, bool loop){
 #pragma mark ATLAS
 void ofxImageSequenceAtlas::drawInBatch(TextureAtlasDrawer* atlas){
     textureFile = framesPath+frontPath + ofToString(frameCounter) + ".png";
+    //ofLogNotice("ofxImageSequenceAtlas") << "textureFile: " << textureFile;
     atlas->drawTextureInBatch(textureFile, texQuad);
 }
 

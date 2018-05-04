@@ -18,13 +18,12 @@ ofxSequenceManager::~ofxSequenceManager(){
 
 void ofxSequenceManager::setup(vector<string> dir){
     //Set up directories
-    SequenceDirectory * dir0 = new SequenceDirectory;
-    dir0->path = "imageSequences/wash4/";
-    directories.push_back(dir0);
-    
-    SequenceDirectory * dir1 = new SequenceDirectory;
-    dir1->path = "imageSequences/care1/";
-    directories.push_back(dir1);
+    for (auto &d : dir){
+        SequenceDirectory * tempDir = new SequenceDirectory;
+        tempDir->path = d;
+        directories.push_back(tempDir);
+    }
+
     
     // GRID SETUP //////////////////////////
     float width = ofGetWidth()/numRows;
@@ -54,18 +53,18 @@ void ofxSequenceManager::update(float dt){
     }
 }
 
-void ofxSequenceManager::draw(){
+void ofxSequenceManager::drawFrames(TextureAtlasDrawer _atlasMan){
     switch(state){
         case States::PLAY_FRAMES: {
             
-            Global::one().atlasManager.beginBatchDraw();
+            _atlasMan.beginBatchDraw();
             
             
             for(auto &seq : sequences){
-                seq->drawInBatch(&Global::one().atlasManager);
+                seq->drawInBatch(&_atlasMan);
             }
             
-            Global::one().atlasManager.endBatchDraw(Global::one().debug);
+            _atlasMan.endBatchDraw(debug);
 
             
             break;
@@ -85,7 +84,7 @@ int ofxSequenceManager::getNumDirectories(){
     return directories.size();
 }
 
-vector<SequenceDirectory*> ofxSequenceManager::getDirectories(){
+vector<ofxSequenceManager::SequenceDirectory*> ofxSequenceManager::getDirectories(){
     return directories;
 }
 

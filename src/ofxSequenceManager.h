@@ -18,7 +18,7 @@ public:
     
     void setup(vector<string> dir);
     void update(float dt);
-    void draw();
+    void drawFrames(TextureAtlasDrawer _atlasMan);
     
     
     // STRUCTS /////////////////////////
@@ -58,5 +58,5 @@ private:
     // VISUAL COUNTER //////////////////////////
     int visualCounter = 0;
     
-    // ATLAS  //////////////////////////
+    bool debug = false;
 };
