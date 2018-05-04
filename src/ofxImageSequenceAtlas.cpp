@@ -1,27 +1,27 @@
 //
-//  ImageSequence.cpp
+//  ofxofxofxImageSequenceAtlasAtlasAtlas.cpp
 //  FFG_Shop
 //
 //  Created by Nicole Messier on 4/30/18.
 //
 //
 
-#include "ImageSequence.h"
+#include "ofxImageSequenceAtlas.h"
 
-ImageSequence::ImageSequence(){
+ofxImageSequenceAtlas::ofxImageSequenceAtlas(){
     
 }
 
-ImageSequence::~ImageSequence(){
+ofxImageSequenceAtlas::~ofxImageSequenceAtlas(){
     
 }
 
-void ImageSequence::setup(ofVec2f _pos, ofVec2f _size){
+void ofxImageSequenceAtlas::setup(ofVec2f _pos, ofVec2f _size){
     pos = _pos;
     size = _size;
 }
 
-void ImageSequence::update(float dt){
+void ofxImageSequenceAtlas::update(float dt){
     
     switch(state){
         case States::PLAY_ONCE: {
@@ -53,7 +53,7 @@ void ImageSequence::update(float dt){
 
 }
 
-void ImageSequence::playSequence(int _startFrame, bool loop){
+void ofxImageSequenceAtlas::playSequence(int _startFrame, bool loop){
     if(loop){
         setState(States::PLAY_LOOPING);
     } else {
@@ -62,12 +62,12 @@ void ImageSequence::playSequence(int _startFrame, bool loop){
 }
 
 #pragma mark ATLAS
-void ImageSequence::drawInBatch(TextureAtlasDrawer* atlas){
+void ofxImageSequenceAtlas::drawInBatch(TextureAtlasDrawer* atlas){
     textureFile = framesPath+frontPath + ofToString(frameCounter) + ".png";
     atlas->drawTextureInBatch(textureFile, texQuad);
 }
 
-TextureAtlasDrawer::TexQuad ImageSequence::getParalelogramForRect(const ofRectangle & r,float widthPerc){
+TextureAtlasDrawer::TexQuad ofxImageSequenceAtlas::getParalelogramForRect(const ofRectangle & r,float widthPerc){
     
     
     TextureAtlasDrawer::TexQuad quad;
@@ -88,7 +88,7 @@ TextureAtlasDrawer::TexQuad ImageSequence::getParalelogramForRect(const ofRectan
 
 #pragma mark STATES
 
-void ImageSequence::setState(States _state){
+void ofxImageSequenceAtlas::setState(States _state){
     state = _state;
     
     switch(state){
@@ -107,20 +107,20 @@ void ImageSequence::setState(States _state){
 
 #pragma mark FILE PATHS
 
-void ImageSequence::setFramesPath(string _framesPath){
+void ofxImageSequenceAtlas::setFramesPath(string _framesPath){
     framesPath = _framesPath; 
 }
 
-void ImageSequence::setNumFrames(int _numFrames){
+void ofxImageSequenceAtlas::setNumFrames(int _numFrames){
     numFrames = _numFrames; 
 }
 
 #pragma mark ATTRIBUTES
-ofVec2f ImageSequence::getPos(){
+ofVec2f ofxImageSequenceAtlas::getPos(){
     return pos;
 }
 
-ofVec2f ImageSequence::getSize(){
+ofVec2f ofxImageSequenceAtlas::getSize(){
     return size; 
 }
 

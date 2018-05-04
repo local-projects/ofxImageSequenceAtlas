@@ -1,5 +1,5 @@
 //
-//  SequenceManager.hpp
+//  ofxofxSequenceManager.hpp
 //  FFG_Shop
 //
 //  Created by Nicole Messier on 5/1/18.
@@ -8,20 +8,24 @@
 
 #pragma once
 #include "ofMain.h"
-#include "ImageSequence.h"
+#include "ofxImageSequenceAtlas.h"
 #include "TextureAtlasDrawer.h"
-#include "ShopStructs.h"
-#include "Global.h"
-#include "ofxTimeMeasurements.h"
 
-class SequenceManager{
+class ofxSequenceManager{
 public:
-    SequenceManager();
-    ~SequenceManager();
+    ofxSequenceManager();
+    ~ofxSequenceManager();
     
     void setup(vector<string> dir);
     void update(float dt);
     void draw();
+    
+    
+    // STRUCTS /////////////////////////
+    struct SequenceDirectory{
+        int numFiles;
+        string path;
+    };
     
     // STATES //////////////////////////
     enum States{
@@ -32,12 +36,12 @@ public:
     void setState(States _state);
     
     // IMAGE SEQUENCE //////////////////////////
-    vector<ImageSequence*> getSequences();
+    vector<ofxImageSequenceAtlas *> getSequences();
     
     // SEQUENCE DIRECTORIES //////////////////////////
     
     int getNumDirectories();
-    vector<Shop::SequenceDirectory*> getDirectories();
+    vector<SequenceDirectory*> getDirectories();
     
 private:
     // GRID //////////////////////////
@@ -45,8 +49,8 @@ private:
     ofVec2f imgSize = ofVec2f(320, 180);
     
     //  IMAGE SEQUENCE //////////////////////////
-    vector<ImageSequence*> sequences;
-    vector<Shop::SequenceDirectory*> directories;
+    vector<ofxImageSequenceAtlas*> sequences;
+    vector<SequenceDirectory*> directories;
     
     // STATES //////////////////////////
     States state = States::STOP_FRAMES;

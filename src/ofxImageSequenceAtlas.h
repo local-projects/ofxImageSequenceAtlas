@@ -1,5 +1,5 @@
 //
-//  ImageSequence.hpp
+//  ofxImageSequenceAtlas.hpp
 //  FFG_Shop
 //
 //  Created by Nicole Messier on 4/30/18.
@@ -10,10 +10,10 @@
 #include "ofMain.h"
 #include "TextureAtlasDrawer.h"
 
-class ImageSequence{
+class ofxImageSequenceAtlas{
 public:
-    ImageSequence();
-    ~ImageSequence();
+    ofxImageSequenceAtlas();
+    ~ofxImageSequenceAtlas();
     
     void setup(ofVec2f _pos, ofVec2f _size);
     void update(float dt);
@@ -58,6 +58,6 @@ private:
     
     // FILEPATHS //////////////////////////////////
     string frontPath = "frame-";
-    string framesPath = "imageSequences/wash4/";
+    string framesPath = "ofxofxImageSequenceAtlasAtlass/wash4/";
     int numFrames = 0;
 };

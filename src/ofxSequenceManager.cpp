@@ -1,22 +1,22 @@
 //
-//  SequenceManager.cpp
+//  ofxSequenceManager.cpp
 //  FFG_Shop
 //
 //  Created by Nicole Messier on 5/1/18.
 //
 //
 
-#include "SequenceManager.h"
+#include "ofxSequenceManager.h"
 
-SequenceManager::SequenceManager(){
+ofxSequenceManager::ofxSequenceManager(){
     
 }
 
-SequenceManager::~SequenceManager(){
+ofxSequenceManager::~ofxSequenceManager(){
     
 }
 
-void SequenceManager::setup(vector<string> dir){
+void ofxSequenceManager::setup(vector<string> dir){
     //Set up directories
     Shop::SequenceDirectory * dir0 = new Shop::SequenceDirectory;
     dir0->path = "imageSequences/wash4/";
@@ -40,7 +40,7 @@ void SequenceManager::setup(vector<string> dir){
     }
 }
 
-void SequenceManager::update(float dt){
+void ofxSequenceManager::update(float dt){
     switch(state){
         case States::PLAY_FRAMES: {
             for(auto &seq : sequences){
@@ -54,7 +54,7 @@ void SequenceManager::update(float dt){
     }
 }
 
-void SequenceManager::draw(){
+void ofxSequenceManager::draw(){
     switch(state){
         case States::PLAY_FRAMES: {
             TSGL_START("draw laundry");
@@ -79,20 +79,20 @@ void SequenceManager::draw(){
 }
 
 #pragma mark GET
-vector<ImageSequence*> SequenceManager::getSequences(){
+vector<ImageSequence*> ofxSequenceManager::getSequences(){
     return sequences;
 }
 
-int SequenceManager::getNumDirectories(){
+int ofxSequenceManager::getNumDirectories(){
     return directories.size();
 }
 
-vector<Shop::SequenceDirectory*> SequenceManager::getDirectories(){
+vector<Shop::SequenceDirectory*> ofxSequenceManager::getDirectories(){
     return directories;
 }
 
 #pragma mark STATES
-void SequenceManager::setState(States _state){
+void ofxSequenceManager::setState(States _state){
     state = _state;
     
     switch(state){
