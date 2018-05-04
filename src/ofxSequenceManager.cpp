@@ -18,11 +18,11 @@ ofxSequenceManager::~ofxSequenceManager(){
 
 void ofxSequenceManager::setup(vector<string> dir){
     //Set up directories
-    Shop::SequenceDirectory * dir0 = new Shop::SequenceDirectory;
+    SequenceDirectory * dir0 = new SequenceDirectory;
     dir0->path = "imageSequences/wash4/";
     directories.push_back(dir0);
     
-    Shop::SequenceDirectory * dir1 = new Shop::SequenceDirectory;
+    SequenceDirectory * dir1 = new SequenceDirectory;
     dir1->path = "imageSequences/care1/";
     directories.push_back(dir1);
     
@@ -33,7 +33,7 @@ void ofxSequenceManager::setup(vector<string> dir){
     
     for(int i=0; i<numRows;i++){
         for(int j=0; j<numColumns; j++){
-            ImageSequence *temp = new ImageSequence();
+            ofxImageSequenceAtlas *temp = new ofxImageSequenceAtlas();
             temp->setup(ofVec2f(i*width, j*height), ofVec2f(width, height));
             sequences.push_back(temp);
         }
@@ -57,7 +57,6 @@ void ofxSequenceManager::update(float dt){
 void ofxSequenceManager::draw(){
     switch(state){
         case States::PLAY_FRAMES: {
-            TSGL_START("draw laundry");
             
             Global::one().atlasManager.beginBatchDraw();
             
@@ -67,8 +66,7 @@ void ofxSequenceManager::draw(){
             }
             
             Global::one().atlasManager.endBatchDraw(Global::one().debug);
-            
-            TSGL_STOP("draw laundry")
+
             
             break;
         }
@@ -79,7 +77,7 @@ void ofxSequenceManager::draw(){
 }
 
 #pragma mark GET
-vector<ImageSequence*> ofxSequenceManager::getSequences(){
+vector<ofxImageSequenceAtlas*> ofxSequenceManager::getSequences(){
     return sequences;
 }
 
@@ -87,7 +85,7 @@ int ofxSequenceManager::getNumDirectories(){
     return directories.size();
 }
 
-vector<Shop::SequenceDirectory*> ofxSequenceManager::getDirectories(){
+vector<SequenceDirectory*> ofxSequenceManager::getDirectories(){
     return directories;
 }
 

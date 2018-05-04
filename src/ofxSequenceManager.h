@@ -57,4 +57,6 @@ private:
     
     // VISUAL COUNTER //////////////////////////
     int visualCounter = 0;
+    
+    // ATLAS  //////////////////////////
 };
