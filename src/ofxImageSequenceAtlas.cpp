@@ -19,6 +19,7 @@ ofxImageSequenceAtlas::~ofxImageSequenceAtlas(){
 void ofxImageSequenceAtlas::setup(ofVec2f _pos, ofVec2f _size){
     pos = _pos;
     size = _size;
+    sizeOrg = size;
 }
 
 void ofxImageSequenceAtlas::update(float dt){
@@ -78,13 +79,26 @@ TextureAtlasDrawer::TexQuad ofxImageSequenceAtlas::getParalelogramForRect(const 
     quad.verts.br = ofVec3f(r.x + r.width, r.y + r.height);
     quad.verts.bl = ofVec3f(r.x, r.y + r.height);
     
-    //uncomment for cropped
-    quad.texCoords.tl = ofVec2f((1-widthPerc)/2, 0);
-    quad.texCoords.tr = ofVec2f((1 + widthPerc)/2, 0);
-    quad.texCoords.br = ofVec2f((1 + widthPerc)/2, 1);
-    quad.texCoords.bl = ofVec2f((1-widthPerc)/2, 1);
     
+    //uncomment for cropped
+    quad.texCoords.tl = ofVec2f(0, 0);
+    quad.texCoords.tr = ofVec2f(1 - widthPerc, 0);
+    quad.texCoords.br = ofVec2f(1 - widthPerc, 1);
+    quad.texCoords.bl = ofVec2f(0, 1);
+
     return quad; 
+}
+
+void ofxImageSequenceAtlas::calculateCrop(ofVec2f cropPerc){
+    ofVec2f cropSize = sizeOrg*cropPerc;
+    ofRectangle r = ofRectangle(getPos().x, getPos().y, cropSize.x, cropSize.y);
+    
+    TextureAtlasDrawer::TexQuad tq = getParalelogramForRect(r, 1-cropPerc.x);
+    texQuad = tq;
+}
+
+void ofxImageSequenceAtlas::setTextureDimensions(TextureAtlasDrawer::TextureDimensions _td){
+    td = _td;
 }
 
 #pragma mark STATES
