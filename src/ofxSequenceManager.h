@@ -43,6 +43,7 @@ public:
     int getNumDirectories();
     vector<SequenceDirectory*> getDirectories();
     
+    
 private:
     // GRID //////////////////////////
     int numRows = 35;
@@ -57,6 +58,5 @@ private:
     
     // VISUAL COUNTER //////////////////////////
     int visualCounter = 0;
-    
     bool debug = false;
 };

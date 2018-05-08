@@ -9,6 +9,7 @@
 #pragma once
 #include "ofMain.h"
 #include "TextureAtlasDrawer.h"
+#include "ofxAnimatableFloat.h"
 
 class ofxImageSequenceAtlas{
 public:
@@ -41,7 +42,20 @@ public:
     
     // FILEPATHS //////////////////////////////////
     void setNumFrames(int _numFrames);
-    void setFramesPath(string _framesPath); 
+    void setFramesPath(string _framesPath);
+    
+    // MOTION //////////////////////////////////
+    void setupMotion();
+    ofxAnimatableFloat reveal;
+    float animationDuration = 1.0f;
+    
+    void resetReveal(ofVec2f fromTo, float delay);
+    
+    //Motion States
+    enum AnimState{
+        REVEAL,
+        NUM_ANIMATION_STATES
+    };
     
 private:
     
