@@ -60,7 +60,13 @@ void ofxImageSequenceAtlas::update(float dt){
         case AnimState::IDLE: { break; }
         case AnimState::REVEAL: {
             reveal.update(dt);
-            calculateCrop(ofVec2f(reveal.val(), 1.0f));
+            
+            
+            if(!left){
+                calculateCropRight(ofVec2f(reveal.val(), 1.0f));
+            } else {
+                calculateCropLeft(ofVec2f(reveal.val(), 1.0f));
+            }
             break;
         }
         case AnimState::LOOP: { break; }
@@ -70,7 +76,8 @@ void ofxImageSequenceAtlas::update(float dt){
 }
 
 void ofxImageSequenceAtlas::drawDebug(){
-    ofDrawBitmapString("col: " + ofToString(column), pos.x, pos.y);
+    //ofDrawBitmapString("col: " + ofToString(column), pos.x, pos.y);
+    ofDrawBitmapString("L: " + ofToString(left), pos.x, pos.y);
 }
 
 #pragma mark MOTION
@@ -80,7 +87,9 @@ void ofxImageSequenceAtlas::setMotionState(AnimState _animState){
     
     switch(animState){
         case AnimState::IDLE: { break; }
-        case AnimState::REVEAL: { break; }
+        case AnimState::REVEAL:{
+            break;
+        }
         case AnimState::LOOP: { break; }
         default: break;
     }
@@ -108,6 +117,14 @@ void ofxImageSequenceAtlas::playSequence(int _startFrame, bool loop){
     }
 }
 
+void ofxImageSequenceAtlas::calculateCropLeft(ofVec2f cropPerc){
+    ofVec2f cropSize = sizeOrg*cropPerc;
+    ofRectangle r = ofRectangle((getPos().x + size.x) - cropSize.x, getPos().y, cropSize.x, cropSize.y);
+    
+    TextureAtlasDrawer::TexQuad tq = getParalelogramForRect(r, cropPerc.x, true);
+    texQuad = tq;
+}
+
 
 
 #pragma mark ATLAS
@@ -115,9 +132,17 @@ void ofxImageSequenceAtlas::drawInBatch(TextureAtlasDrawer* atlas){
     textureFile = framesPath+frontPath + ofToString(frameCounter) + ".png";
     //ofLogNotice("ofxImageSequenceAtlas") << "textureFile: " << textureFile;
     atlas->drawTextureInBatch(textureFile, texQuad);
+    
+    ofSetColor(255, 192, 203);
+    ofNoFill();
+    {
+        //ofDrawRectangle(pos.x, pos.y, size.x, size.y);
+    }
+    ofSetColor(255);
+    ofFill();
 }
 
-TextureAtlasDrawer::TexQuad ofxImageSequenceAtlas::getParalelogramForRect(const ofRectangle & r,float widthPerc){
+TextureAtlasDrawer::TexQuad ofxImageSequenceAtlas::getParalelogramForRect(const ofRectangle & r,float widthPerc, float fromLeft){
     
     
     TextureAtlasDrawer::TexQuad quad;
@@ -127,21 +152,27 @@ TextureAtlasDrawer::TexQuad ofxImageSequenceAtlas::getParalelogramForRect(const 
     quad.verts.br = ofVec3f(r.x + r.width, r.y + r.height);
     quad.verts.bl = ofVec3f(r.x, r.y + r.height);
     
-    
-    //uncomment for cropped
-    quad.texCoords.tl = ofVec2f(0, 0);
-    quad.texCoords.tr = ofVec2f(1 - widthPerc, 0);
-    quad.texCoords.br = ofVec2f(1 - widthPerc, 1);
-    quad.texCoords.bl = ofVec2f(0, 1);
+    if(!fromLeft){
+        //uncomment for cropped
+        quad.texCoords.tl = ofVec2f(0, 0);
+        quad.texCoords.tr = ofVec2f(1 - widthPerc, 0);
+        quad.texCoords.br = ofVec2f(1 - widthPerc, 1);
+        quad.texCoords.bl = ofVec2f(0, 1);
+    } else {
+        quad.texCoords.tl = ofVec2f(1 - widthPerc, 0);
+        quad.texCoords.tr = ofVec2f(1, 0);
+        quad.texCoords.br = ofVec2f(1, 1);
+        quad.texCoords.bl = ofVec2f(1 - widthPerc, 1);
+    }
 
-    return quad; 
+    return quad;
 }
 
-void ofxImageSequenceAtlas::calculateCrop(ofVec2f cropPerc){
+void ofxImageSequenceAtlas::calculateCropRight(ofVec2f cropPerc){
     ofVec2f cropSize = sizeOrg*cropPerc;
     ofRectangle r = ofRectangle(getPos().x, getPos().y, cropSize.x, cropSize.y);
     
-    TextureAtlasDrawer::TexQuad tq = getParalelogramForRect(r, 1-cropPerc.x);
+    TextureAtlasDrawer::TexQuad tq = getParalelogramForRect(r, 1-cropPerc.x, false);
     texQuad = tq;
 }
 

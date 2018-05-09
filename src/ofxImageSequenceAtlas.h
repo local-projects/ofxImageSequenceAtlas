@@ -37,9 +37,8 @@ public:
     
     // ATLAS //////////////////////////////////
     void drawInBatch(TextureAtlasDrawer* atlas);
-    void calculateCrop(ofVec2f cropPerc);
     void setTextureDimensions(TextureAtlasDrawer::TextureDimensions _td);
-    TextureAtlasDrawer::TexQuad getParalelogramForRect(const ofRectangle & r,float widthPerc);
+    TextureAtlasDrawer::TexQuad getParalelogramForRect(const ofRectangle & r,float widthPerc, float fromLeft);
     TextureAtlasDrawer::TexQuad texQuad;
     
     // FILEPATHS //////////////////////////////////
@@ -51,7 +50,12 @@ public:
     ofxAnimatableFloat reveal;
     float animationDuration = 1.0f;
     
+    //reveal
     void resetReveal(ofVec2f fromTo, float delay);
+    bool shouldReveal = false;
+    void calculateCropRight(ofVec2f cropPerc);
+    void calculateCropLeft(ofVec2f cropPerc);
+    bool left = false; 
     
     //Motion States
     enum AnimState{
