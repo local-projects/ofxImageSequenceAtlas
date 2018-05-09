@@ -69,7 +69,16 @@ void ofxImageSequenceAtlas::update(float dt){
             }
             break;
         }
-        case AnimState::LOOP: { break; }
+        case AnimState::CLOSE_REVEAL: {
+            reveal.update(dt);
+            if(!left){
+                calculateCropRight(ofVec2f(reveal.val(), 1.0f));
+            } else {
+                calculateCropLeft(ofVec2f(reveal.val(), 1.0f));
+            }
+            
+            break;
+        }
         default: break;
     }
 
@@ -77,7 +86,8 @@ void ofxImageSequenceAtlas::update(float dt){
 
 void ofxImageSequenceAtlas::drawDebug(){
     //ofDrawBitmapString("col: " + ofToString(column), pos.x, pos.y);
-    ofDrawBitmapString("L: " + ofToString(left), pos.x, pos.y);
+    ofDrawBitmapString("R: " + ofToString(shouldReveal) +
+                       "\nL: " + ofToString(left), pos.x, pos.y);
 }
 
 #pragma mark MOTION
@@ -87,10 +97,11 @@ void ofxImageSequenceAtlas::setMotionState(AnimState _animState){
     
     switch(animState){
         case AnimState::IDLE: { break; }
-        case AnimState::REVEAL:{
+        case AnimState::REVEAL:{ break; }
+        case AnimState::CLOSE_REVEAL: {
+            resetReveal(ofVec2f(reveal.val(), 1.0f), 0.0f);
             break;
         }
-        case AnimState::LOOP: { break; }
         default: break;
     }
 }
@@ -98,7 +109,6 @@ void ofxImageSequenceAtlas::setMotionState(AnimState _animState){
 void ofxImageSequenceAtlas::resetReveal(ofVec2f fromTo, float delay){
     reveal.reset(fromTo.x);
     reveal.animateToAfterDelay(fromTo.y, delay);
-    setMotionState(AnimState::REVEAL); 
 }
 
 void ofxImageSequenceAtlas::setupMotion(){
@@ -107,6 +117,8 @@ void ofxImageSequenceAtlas::setupMotion(){
     reveal.setRepeatType(AnimRepeat::PLAY_ONCE);
     reveal.setDuration(animationDuration);
     reveal.setCurve(TANH);
+    
+    ofAddListener(reveal.animFinished, this, &ofxImageSequenceAtlas::onRevealFinish);
 }
 
 void ofxImageSequenceAtlas::playSequence(int _startFrame, bool loop){
@@ -117,14 +129,18 @@ void ofxImageSequenceAtlas::playSequence(int _startFrame, bool loop){
     }
 }
 
-void ofxImageSequenceAtlas::calculateCropLeft(ofVec2f cropPerc){
-    ofVec2f cropSize = sizeOrg*cropPerc;
-    ofRectangle r = ofRectangle((getPos().x + size.x) - cropSize.x, getPos().y, cropSize.x, cropSize.y);
-    
-    TextureAtlasDrawer::TexQuad tq = getParalelogramForRect(r, cropPerc.x, true);
-    texQuad = tq;
+void ofxImageSequenceAtlas::onRevealFinish(ofxAnimatable::AnimationEvent & event){
+    switch(animState){
+        case AnimState::IDLE: { break; }
+        case AnimState::REVEAL:{ break; }
+        case AnimState::CLOSE_REVEAL: {
+            setMotionState(AnimState::IDLE);
+            left = false;
+            break;
+        }
+        default: break;
+    }
 }
-
 
 
 #pragma mark ATLAS
@@ -167,6 +183,38 @@ TextureAtlasDrawer::TexQuad ofxImageSequenceAtlas::getParalelogramForRect(const 
 
     return quad;
 }
+
+void ofxImageSequenceAtlas::calculateCropLeftRight(ofVec2f cropPerc){
+    ofVec2f cropSize = sizeOrg*cropPerc;
+    ofVec2f leftOver = (sizeOrg - cropSize);
+    ofRectangle r = ofRectangle(getPos().x + leftOver.x/2, getPos().y, cropSize.x, cropSize.y);
+    
+    
+    TextureAtlasDrawer::TexQuad quad;
+    
+    quad.verts.tl = ofVec3f(r.x , r.y);
+    quad.verts.tr = ofVec3f(r.x + r.width, r.y);
+    quad.verts.br = ofVec3f(r.x + r.width, r.y + r.height);
+    quad.verts.bl = ofVec3f(r.x, r.y + r.height);
+    
+    float newPerc = 1 - cropPerc.x;
+    quad.texCoords.tl = ofVec2f(newPerc/2, 0);
+    quad.texCoords.tr = ofVec2f(1 - newPerc/2, 0);
+    quad.texCoords.br = ofVec2f(1 - newPerc/2, 1);
+    quad.texCoords.bl = ofVec2f(newPerc/2, 1);
+    
+    
+    texQuad = quad;
+}
+
+void ofxImageSequenceAtlas::calculateCropLeft(ofVec2f cropPerc){
+    ofVec2f cropSize = sizeOrg*cropPerc;
+    ofRectangle r = ofRectangle((getPos().x + size.x) - cropSize.x, getPos().y, cropSize.x, cropSize.y);
+    
+    TextureAtlasDrawer::TexQuad tq = getParalelogramForRect(r, cropPerc.x, true);
+    texQuad = tq;
+}
+
 
 void ofxImageSequenceAtlas::calculateCropRight(ofVec2f cropPerc){
     ofVec2f cropSize = sizeOrg*cropPerc;

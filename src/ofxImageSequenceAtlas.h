@@ -36,6 +36,9 @@ public:
     void setState(States _state);
     
     // ATLAS //////////////////////////////////
+    void calculateCropRight(ofVec2f cropPerc);
+    void calculateCropLeft(ofVec2f cropPerc);
+    void calculateCropLeftRight(ofVec2f cropPerc);
     void drawInBatch(TextureAtlasDrawer* atlas);
     void setTextureDimensions(TextureAtlasDrawer::TextureDimensions _td);
     TextureAtlasDrawer::TexQuad getParalelogramForRect(const ofRectangle & r,float widthPerc, float fromLeft);
@@ -47,21 +50,20 @@ public:
     
     // MOTION //////////////////////////////////
     void setupMotion();
-    ofxAnimatableFloat reveal;
     float animationDuration = 1.0f;
     
     //reveal
+    ofxAnimatableFloat reveal;
     void resetReveal(ofVec2f fromTo, float delay);
     bool shouldReveal = false;
-    void calculateCropRight(ofVec2f cropPerc);
-    void calculateCropLeft(ofVec2f cropPerc);
     bool left = false; 
+    void onRevealFinish(ofxAnimatable::AnimationEvent & event);
     
     //Motion States
     enum AnimState{
         IDLE,
         REVEAL,
-        LOOP,
+        CLOSE_REVEAL,
         NUM_ANIMATION_STATES
     };
     
@@ -79,7 +81,7 @@ private:
     ofVec2f sizeOrg; //original size
     
     // STATES //////////////////////////////////
-    States state = States::PLAY_ONCE;
+    States state = States::PLAY_LOOPING;
     
     // ATLAS //////////////////////////////////
     string textureFile;
