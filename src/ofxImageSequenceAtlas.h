@@ -16,9 +16,11 @@ public:
     ofxImageSequenceAtlas();
     ~ofxImageSequenceAtlas();
     
-    void setup(ofVec2f _pos, ofVec2f _size);
+    void setup(ofVec2f _pos, ofVec2f _size, int _column, int _row);
     void update(float dt);
     void playSequence(int _startFrame, bool loop);
+    
+    void drawDebug(); 
     
     // ATTRIBUTES //////////////////////////////////
     ofVec2f getPos();
@@ -53,9 +55,17 @@ public:
     
     //Motion States
     enum AnimState{
+        IDLE,
         REVEAL,
+        LOOP,
         NUM_ANIMATION_STATES
     };
+    
+    AnimState animState = AnimState::IDLE;
+    void setMotionState(AnimState _animState);
+    
+    int column = 0;
+    int row = 0; 
     
 private:
     
@@ -65,7 +75,7 @@ private:
     ofVec2f sizeOrg; //original size
     
     // STATES //////////////////////////////////
-    States state = States::PLAY_LOOPING;
+    States state = States::PLAY_ONCE;
     
     // ATLAS //////////////////////////////////
     string textureFile;

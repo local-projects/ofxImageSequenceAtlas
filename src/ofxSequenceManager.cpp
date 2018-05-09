@@ -33,7 +33,7 @@ void ofxSequenceManager::setup(vector<string> dir){
     for(int i=0; i<numRows;i++){
         for(int j=0; j<numColumns; j++){
             ofxImageSequenceAtlas *temp = new ofxImageSequenceAtlas();
-            temp->setup(ofVec2f(i*width, j*height), ofVec2f(width, height));
+            temp->setup(ofVec2f(i*width, j*height), ofVec2f(width, height), i, j);
             sequences.push_back(temp);
         }
     }

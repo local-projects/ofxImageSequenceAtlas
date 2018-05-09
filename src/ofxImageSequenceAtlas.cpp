@@ -16,10 +16,12 @@ ofxImageSequenceAtlas::~ofxImageSequenceAtlas(){
     
 }
 
-void ofxImageSequenceAtlas::setup(ofVec2f _pos, ofVec2f _size){
+void ofxImageSequenceAtlas::setup(ofVec2f _pos, ofVec2f _size, int _column, int _row){
     pos = _pos;
     size = _size;
     sizeOrg = size;
+    column = _column;
+    row = _row;
     
     setupMotion(); 
 }
@@ -53,7 +55,49 @@ void ofxImageSequenceAtlas::update(float dt){
         case States::STOPPED: {break ;}
         default: break;
     }
+    
+    switch(animState){
+        case AnimState::IDLE: { break; }
+        case AnimState::REVEAL: {
+            reveal.update(dt);
+            calculateCrop(ofVec2f(reveal.val(), 1.0f));
+            break;
+        }
+        case AnimState::LOOP: { break; }
+        default: break;
+    }
 
+}
+
+void ofxImageSequenceAtlas::drawDebug(){
+    ofDrawBitmapString("col: " + ofToString(column), pos.x, pos.y);
+}
+
+#pragma mark MOTION
+
+void ofxImageSequenceAtlas::setMotionState(AnimState _animState){
+    animState = _animState;
+    
+    switch(animState){
+        case AnimState::IDLE: { break; }
+        case AnimState::REVEAL: { break; }
+        case AnimState::LOOP: { break; }
+        default: break;
+    }
+}
+
+void ofxImageSequenceAtlas::resetReveal(ofVec2f fromTo, float delay){
+    reveal.reset(fromTo.x);
+    reveal.animateToAfterDelay(fromTo.y, delay);
+    setMotionState(AnimState::REVEAL); 
+}
+
+void ofxImageSequenceAtlas::setupMotion(){
+    // MOTION VARIABLES //////////////////////////////
+    reveal.reset(1.0);
+    reveal.setRepeatType(AnimRepeat::PLAY_ONCE);
+    reveal.setDuration(animationDuration);
+    reveal.setCurve(TANH);
 }
 
 void ofxImageSequenceAtlas::playSequence(int _startFrame, bool loop){
@@ -63,6 +107,8 @@ void ofxImageSequenceAtlas::playSequence(int _startFrame, bool loop){
         setState(States::PLAY_ONCE);
     }
 }
+
+
 
 #pragma mark ATLAS
 void ofxImageSequenceAtlas::drawInBatch(TextureAtlasDrawer* atlas){
@@ -101,21 +147,6 @@ void ofxImageSequenceAtlas::calculateCrop(ofVec2f cropPerc){
 
 void ofxImageSequenceAtlas::setTextureDimensions(TextureAtlasDrawer::TextureDimensions _td){
     td = _td;
-}
-
-#pragma mark MOTION
-void ofxImageSequenceAtlas::setupMotion(){
-    // MOTION VARIABLES //////////////////////////////
-    reveal.reset(1.0);
-    reveal.setRepeatType(AnimRepeat::PLAY_ONCE);
-    reveal.setDuration(animationDuration);
-    reveal.setCurve(TANH);
-}
-
-void ofxImageSequenceAtlas::resetReveal(ofVec2f fromTo, float delay){
-    reveal.reset(fromTo.x);
-    reveal.animateToAfterDelay(fromTo.y, delay);
-   
 }
 
 #pragma mark STATES
