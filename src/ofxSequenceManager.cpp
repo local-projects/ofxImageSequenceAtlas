@@ -40,13 +40,12 @@ void ofxSequenceManager::setup(vector<string> dir){
 }
 
 void ofxSequenceManager::update(float dt){
+    for(auto &seq : sequences){
+        seq->update(dt);
+    }
+    
     switch(state){
-        case States::PLAY_FRAMES: {
-            for(auto &seq : sequences){
-                seq->update(dt);
-            }
-            break;
-        }
+        case States::PLAY_FRAMES: {break;}
         case States::STOP_FRAMES: { break;}
         default: break;
             
@@ -54,21 +53,18 @@ void ofxSequenceManager::update(float dt){
 }
 
 void ofxSequenceManager::drawFrames(TextureAtlasDrawer _atlasMan){
+    
+    _atlasMan.beginBatchDraw();
+    
+    
+    for(auto &seq : sequences){
+        seq->drawInBatch(&_atlasMan);
+    }
+    
+    _atlasMan.endBatchDraw(debug);
+    
     switch(state){
-        case States::PLAY_FRAMES: {
-            
-            _atlasMan.beginBatchDraw();
-            
-            
-            for(auto &seq : sequences){
-                seq->drawInBatch(&_atlasMan);
-            }
-            
-            _atlasMan.endBatchDraw(debug);
-
-            
-            break;
-        }
+        case States::PLAY_FRAMES: {break;}
         case States::STOP_FRAMES: { break;}
         default: break;
             
@@ -93,18 +89,30 @@ void ofxSequenceManager::setState(States _state){
     state = _state;
     
     switch(state){
-        case States::PLAY_FRAMES: {
+        case States::PLAY_FRAMES:
+        {
             for(auto &img : sequences){
                 img->setFramesPath(directories[visualCounter]->path);
                 img->setNumFrames(directories[visualCounter]->numFiles);
                 
+                img->setState(ofxImageSequenceAtlas::States::PLAY_LOOPING);
+                //img->setState(ofxImageSequenceAtlas::States::PLAY_LOOPING);
             }
             
-            (visualCounter < directories.size() - 1) ? visualCounter++ : visualCounter = 0;
+            //Uncomment to change directory.
+            //(visualCounter < directories.size() - 1) ? visualCounter++ : visualCounter = 0;
+
             
             break;
         }
-        case States::STOP_FRAMES: { break;}
+        case States::STOP_FRAMES: {
+            for(auto &img : sequences)
+            {
+                img->setState(ofxImageSequenceAtlas::States::STOPPED); 
+            }
+            
+            break;
+        }
         default: break;
             
     }

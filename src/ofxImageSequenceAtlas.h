@@ -34,6 +34,7 @@ public:
     };
     
     void setState(States _state);
+    ofxImageSequenceAtlas::States getState();
     
     // ATLAS //////////////////////////////////
     void calculateCropRight(ofVec2f cropPerc);
@@ -71,7 +72,10 @@ public:
     void setMotionState(AnimState _animState);
     
     int column = 0;
-    int row = 0; 
+    int row = 0;
+    
+    //FRAMERATE
+    void setFrameRateDivisor(int _frameRateDivisor);
     
 private:
     

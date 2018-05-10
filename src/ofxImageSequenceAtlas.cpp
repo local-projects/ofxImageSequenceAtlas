@@ -86,8 +86,9 @@ void ofxImageSequenceAtlas::update(float dt){
 
 void ofxImageSequenceAtlas::drawDebug(){
     //ofDrawBitmapString("col: " + ofToString(column), pos.x, pos.y);
-    ofDrawBitmapString("R: " + ofToString(shouldReveal) +
-                       "\nL: " + ofToString(left), pos.x, pos.y);
+    ofDrawBitmapString("a: " + ofToString(animState)
+                       + "\n s: " + ofToString(state),
+                       pos.x, pos.y);
 }
 
 #pragma mark MOTION
@@ -140,6 +141,10 @@ void ofxImageSequenceAtlas::onRevealFinish(ofxAnimatable::AnimationEvent & event
         }
         default: break;
     }
+}
+
+void ofxImageSequenceAtlas::setFrameRateDivisor(int _frameRateDivisor){
+    frameRateDivisor = _frameRateDivisor;
 }
 
 
@@ -230,19 +235,26 @@ void ofxImageSequenceAtlas::setTextureDimensions(TextureAtlasDrawer::TextureDime
 
 #pragma mark STATES
 
+ofxImageSequenceAtlas::States ofxImageSequenceAtlas::getState(){
+    return state;
+}
+
 void ofxImageSequenceAtlas::setState(States _state){
     state = _state;
     
     switch(state){
         case States::PLAY_ONCE: {
-
+             //ofLogNotice("ofxImageSequenceAtlas") << "set state to PLAY_ONCE" ;
             break ;
         }
         case States::PLAY_LOOPING: {
-            
+            //ofLogNotice("ofxImageSequenceAtlas") << "set state to PLAY_LOOPING" ;
             break ;
         }
-        case States::STOPPED: {break ;}
+        case States::STOPPED: {
+            //ofLogNotice("ofxImageSequenceAtlas") << "set state to STOPPED" ;
+            break ;
+        }
         default: break;
     }
 }
