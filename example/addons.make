@@ -1,3 +1,0 @@
-ofxImageSequenceAtlas
-ofxRectangleUtils
-ofxTextureAtlas
