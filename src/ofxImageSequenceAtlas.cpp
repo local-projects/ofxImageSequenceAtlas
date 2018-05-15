@@ -145,6 +145,7 @@ void ofxImageSequenceAtlas::onRevealFinish(ofxAnimatable::AnimationEvent & event
 
 void ofxImageSequenceAtlas::setFrameRateDivisor(int _frameRateDivisor){
     frameRateDivisor = _frameRateDivisor;
+    
 }
 
 
@@ -266,7 +267,9 @@ void ofxImageSequenceAtlas::setFramesPath(string _framesPath){
 }
 
 void ofxImageSequenceAtlas::setNumFrames(int _numFrames){
-    numFrames = _numFrames; 
+    numFrames = _numFrames;
+    frameCounter = 0;
+    frameRateCounter = frameRateDivisor;
 }
 
 #pragma mark ATTRIBUTES
