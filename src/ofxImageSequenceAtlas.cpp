@@ -152,21 +152,38 @@ void ofxImageSequenceAtlas::setFrameRateDivisor(int _frameRateDivisor){
 #pragma mark ATLAS
 void ofxImageSequenceAtlas::drawInBatch(TextureAtlasDrawer* atlas){
     textureFile = framesPath+frontPath + ofToString(frameCounter) + ".png";
-    //ofLogNotice("ofxImageSequenceAtlas") << "textureFile: " << textureFile;
-    atlas->drawTextureInBatch(textureFile, texQuad);
-    
-    ofSetColor(255, 192, 203);
-    ofNoFill();
+    //textureFile = framesPath+frontPath + ofToString(1) + ".png";
+    atlas->drawTextureInBatch(textureFile, texQuad1);
+    if(doubleCrop)
     {
-        //ofDrawRectangle(pos.x, pos.y, size.x, size.y);
+        atlas->drawTextureInBatch(textureFile, texQuad2);
     }
-    ofSetColor(255);
-    ofFill();
+    
+    if(debug)
+    {
+        ofSetColor(0, 255, 0);
+        ofNoFill();
+        {
+            
+            float width = texQuad1.verts.tl.x - texQuad1.verts.tr.x;
+            float height = texQuad1.verts.bl.y - texQuad1.verts.tl.y;
+            ofDrawRectangle(texQuad1.verts.tl.x, texQuad1.verts.tr.y, fabs(width), fabs(height));
+            
+            
+            ofSetColor(255, 0, 0);
+            float width2 = texQuad2.verts.tl.x - texQuad2.verts.tr.x;
+            float height2 = texQuad2.verts.bl.y - texQuad2.verts.tl.y;
+            ofDrawRectangle(texQuad2.verts.tl.x, texQuad2.verts.tr.y, fabs(width), fabs(height));
+            
+        }
+        ofSetColor(255);
+        ofFill();
+    }
 }
 
-TextureAtlasDrawer::TexQuad ofxImageSequenceAtlas::getParalelogramForRect(const ofRectangle & r,float widthPerc, float fromLeft){
+TextureAtlasDrawer::TexQuad ofxImageSequenceAtlas::getParalelogramForRect(const ofRectangle & r,float widthPerc, float fromLeft, float fromMiddle){
     
-    
+   
     TextureAtlasDrawer::TexQuad quad;
     
     quad.verts.tl = ofVec3f(r.x , r.y);
@@ -174,17 +191,24 @@ TextureAtlasDrawer::TexQuad ofxImageSequenceAtlas::getParalelogramForRect(const 
     quad.verts.br = ofVec3f(r.x + r.width, r.y + r.height);
     quad.verts.bl = ofVec3f(r.x, r.y + r.height);
     
-    if(!fromLeft){
+    if(fromLeft){
+        
+        quad.texCoords.tl = ofVec2f(1 - widthPerc, 0);
+        quad.texCoords.tr = ofVec2f(1, 0);
+        quad.texCoords.br = ofVec2f(1, 1);
+        quad.texCoords.bl = ofVec2f(1 - widthPerc, 1);
+    } else if(fromMiddle)
+    {
+        quad.texCoords.tl = ofVec2f(0.5, 0);
+        quad.texCoords.tr = ofVec2f(0.5 - widthPerc, 0);
+        quad.texCoords.br = ofVec2f(0.5 - widthPerc, 1);
+        quad.texCoords.bl = ofVec2f(0.5, 1);
+    }else {
         //uncomment for cropped
         quad.texCoords.tl = ofVec2f(0, 0);
         quad.texCoords.tr = ofVec2f(1 - widthPerc, 0);
         quad.texCoords.br = ofVec2f(1 - widthPerc, 1);
         quad.texCoords.bl = ofVec2f(0, 1);
-    } else {
-        quad.texCoords.tl = ofVec2f(1 - widthPerc, 0);
-        quad.texCoords.tr = ofVec2f(1, 0);
-        quad.texCoords.br = ofVec2f(1, 1);
-        quad.texCoords.bl = ofVec2f(1 - widthPerc, 1);
     }
 
     return quad;
@@ -210,24 +234,43 @@ void ofxImageSequenceAtlas::calculateCropLeftRight(ofVec2f cropPerc){
     quad.texCoords.bl = ofVec2f(newPerc/2, 1);
     
     
-    texQuad = quad;
+    texQuad1 = quad;
 }
 
 void ofxImageSequenceAtlas::calculateCropLeft(ofVec2f cropPerc){
     ofVec2f cropSize = sizeOrg*cropPerc;
     ofRectangle r = ofRectangle((getPos().x + size.x) - cropSize.x, getPos().y, cropSize.x, cropSize.y);
     
-    TextureAtlasDrawer::TexQuad tq = getParalelogramForRect(r, cropPerc.x, true);
-    texQuad = tq;
+    TextureAtlasDrawer::TexQuad tq = getParalelogramForRect(r, cropPerc.x, true, false);
+    texQuad1 = tq;
 }
 
 
 void ofxImageSequenceAtlas::calculateCropRight(ofVec2f cropPerc){
-    ofVec2f cropSize = sizeOrg*cropPerc;
-    ofRectangle r = ofRectangle(getPos().x, getPos().y, cropSize.x, cropSize.y);
     
-    TextureAtlasDrawer::TexQuad tq = getParalelogramForRect(r, 1-cropPerc.x, false);
-    texQuad = tq;
+    if(doubleCrop)
+    {
+        float cropPercNewX = cropPerc.x/2;
+        ofVec2f cropSize = ofVec2f(sizeOrg.x*cropPercNewX, sizeOrg.y*cropPerc.y);
+        
+        //Set up first quad
+        ofRectangle r = ofRectangle(getPos().x, getPos().y, cropSize.x, cropSize.y);
+        TextureAtlasDrawer::TexQuad tq = getParalelogramForRect(r, 1-cropPercNewX, false, false);
+        texQuad1 = tq;
+        
+        //Set up second quad
+        ofRectangle r2 = ofRectangle(getPos().x + sizeOrg.x/2, getPos().y, cropSize.x, cropSize.y);
+        TextureAtlasDrawer::TexQuad tq2 = getParalelogramForRect(r2, cropPercNewX, false, true);
+        texQuad2 = tq2;
+        
+    } else
+    {
+        ofVec2f cropSize = sizeOrg*cropPerc;
+        ofRectangle r = ofRectangle(getPos().x, getPos().y, cropSize.x, cropSize.y);
+        
+        TextureAtlasDrawer::TexQuad tq = getParalelogramForRect(r, 1-cropPerc.x, false, false);
+        texQuad1 = tq;
+    }
 }
 
 void ofxImageSequenceAtlas::setTextureDimensions(TextureAtlasDrawer::TextureDimensions _td){

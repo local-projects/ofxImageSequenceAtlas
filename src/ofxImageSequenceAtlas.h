@@ -42,8 +42,9 @@ public:
     void calculateCropLeftRight(ofVec2f cropPerc);
     void drawInBatch(TextureAtlasDrawer* atlas);
     void setTextureDimensions(TextureAtlasDrawer::TextureDimensions _td);
-    TextureAtlasDrawer::TexQuad getParalelogramForRect(const ofRectangle & r,float widthPerc, float fromLeft);
-    TextureAtlasDrawer::TexQuad texQuad;
+    TextureAtlasDrawer::TexQuad getParalelogramForRect(const ofRectangle & r,float widthPerc, float fromLeft, float fromMiddle);
+    TextureAtlasDrawer::TexQuad texQuad1;
+    TextureAtlasDrawer::TexQuad texQuad2;
     
     // FILEPATHS //////////////////////////////////
     void setNumFrames(int _numFrames);
@@ -100,4 +101,8 @@ private:
     string frontPath = "frame-";
     string framesPath = "ofxofxImageSequenceAtlasAtlass/wash4/";
     int numFrames = 0;
+    
+    //This is to put two crops into the same image.
+    bool doubleCrop = true;
+    bool debug = false; 
 };
