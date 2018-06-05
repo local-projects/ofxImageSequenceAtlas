@@ -99,7 +99,7 @@ private:
     
     // FILEPATHS //////////////////////////////////
     string frontPath = "frame-";
-    string framesPath = "ofxofxImageSequenceAtlasAtlass/wash4/";
+    string framesPath = "ofxImageSequenceAtlasAtlass/wash4/";
     int numFrames = 0;
     
     //This is to put two crops into the same image.

@@ -151,8 +151,17 @@ void ofxImageSequenceAtlas::setFrameRateDivisor(int _frameRateDivisor){
 
 #pragma mark ATLAS
 void ofxImageSequenceAtlas::drawInBatch(TextureAtlasDrawer* atlas){
+	string temp = framesPath + frontPath + ofToString(frameCounter) + ".png";
+	//ofStringReplace(temp, "/", "\\");
+	//ofStringReplace(temp, "\\\\", "\\");
+	//textureFile = ofToDataPath(temp); 
+
+#ifdef TARGET_WIN32
+	ofStringReplace(textureFile, "data\\", "");
+#endif
+	//textureFile = "AttractGifs/\\0/\\frame-11.png";
     textureFile = framesPath+frontPath + ofToString(frameCounter) + ".png";
-    //textureFile = framesPath+frontPath + ofToString(1) + ".png";
+
     atlas->drawTextureInBatch(textureFile, texQuad1);
     if(doubleCrop)
     {
@@ -306,7 +315,12 @@ void ofxImageSequenceAtlas::setState(States _state){
 #pragma mark FILE PATHS
 
 void ofxImageSequenceAtlas::setFramesPath(string _framesPath){
-    framesPath = _framesPath; 
+#ifdef TARGET_WIN32
+	framesPath = _framesPath + "\\";
+#else 
+    framesPath = _framesPath ; 
+
+#endif
 }
 
 void ofxImageSequenceAtlas::setNumFrames(int _numFrames){
