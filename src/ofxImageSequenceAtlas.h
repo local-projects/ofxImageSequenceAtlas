@@ -10,6 +10,7 @@
 #include "ofMain.h"
 #include "TextureAtlasDrawer.h"
 #include "ofxAnimatableFloat.h"
+#include "ofxRemoteUIServer.h"
 
 class ofxImageSequenceAtlas{
 public:
@@ -99,10 +100,15 @@ private:
     
     // FILEPATHS //////////////////////////////////
     string frontPath = "frame-";
-    string framesPath = "ofxImageSequenceAtlasAtlass/wash4/";
+    string framesPath = "imageSequences/wash4/";
     int numFrames = 0;
     
     //This is to put two crops into the same image.
     bool doubleCrop = true;
-    bool debug = false; 
+    bool debug = false;
+    
+    
+    float widthPercDebug = 0.0;
+    
+    float textCropPerc = 0.0f; 
 };

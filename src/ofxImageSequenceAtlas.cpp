@@ -23,7 +23,11 @@ void ofxImageSequenceAtlas::setup(ofVec2f _pos, ofVec2f _size, int _column, int 
     column = _column;
     row = _row;
     
-    setupMotion(); 
+    setupMotion();
+    
+    RUI_SHARE_PARAM(widthPercDebug, 0, 1);
+    RUI_SHARE_PARAM(textCropPerc, 0, 1);
+    
 }
 
 void ofxImageSequenceAtlas::update(float dt){
@@ -161,7 +165,9 @@ void ofxImageSequenceAtlas::drawInBatch(TextureAtlasDrawer* atlas){
 #endif
 	//textureFile = "AttractGifs/\\0/\\frame-11.png";
     textureFile = framesPath+frontPath + ofToString(frameCounter) + ".png";
-
+    
+    
+    //ofLogNotice() << "textureFile: " << textureFile;
     atlas->drawTextureInBatch(textureFile, texQuad1);
     if(doubleCrop)
     {
@@ -209,8 +215,8 @@ TextureAtlasDrawer::TexQuad ofxImageSequenceAtlas::getParalelogramForRect(const 
     } else if(fromMiddle)
     {
         quad.texCoords.tl = ofVec2f(0.5, 0);
-        quad.texCoords.tr = ofVec2f(0.5 - widthPerc, 0);
-        quad.texCoords.br = ofVec2f(0.5 - widthPerc, 1);
+        quad.texCoords.tr = ofVec2f(1 - (0.5 - widthPerc), 0);
+        quad.texCoords.br = ofVec2f(1 - (0.5 - widthPerc), 1);
         quad.texCoords.bl = ofVec2f(0.5, 1);
     }else {
         //uncomment for cropped
@@ -274,10 +280,11 @@ void ofxImageSequenceAtlas::calculateCropRight(ofVec2f cropPerc){
         
     } else
     {
+        
         ofVec2f cropSize = sizeOrg*cropPerc;
         ofRectangle r = ofRectangle(getPos().x, getPos().y, cropSize.x, cropSize.y);
-        
         TextureAtlasDrawer::TexQuad tq = getParalelogramForRect(r, 1-cropPerc.x, false, false);
+        
         texQuad1 = tq;
     }
 }
