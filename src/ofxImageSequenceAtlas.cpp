@@ -30,6 +30,10 @@ void ofxImageSequenceAtlas::setup(ofVec2f _pos, ofVec2f _size, int _column, int 
     
 }
 
+void ofxImageSequenceAtlas::setId(int _uid){
+    uid = _uid; 
+}
+
 void ofxImageSequenceAtlas::update(float dt){
     
     switch(state){
@@ -60,31 +64,6 @@ void ofxImageSequenceAtlas::update(float dt){
         default: break;
     }
     
-    switch(animState){
-        case AnimState::IDLE: { break; }
-        case AnimState::REVEAL: {
-            reveal.update(dt);
-            
-            
-            if(!left){
-                calculateCropRight(ofVec2f(reveal.val(), 1.0f));
-            } else {
-                calculateCropLeft(ofVec2f(reveal.val(), 1.0f));
-            }
-            break;
-        }
-        case AnimState::CLOSE_REVEAL: {
-            reveal.update(dt);
-            if(!left){
-                calculateCropRight(ofVec2f(reveal.val(), 1.0f));
-            } else {
-                calculateCropLeft(ofVec2f(reveal.val(), 1.0f));
-            }
-            
-            break;
-        }
-        default: break;
-    }
 
 }
 
@@ -146,7 +125,6 @@ void ofxImageSequenceAtlas::onRevealFinish(ofxAnimatable::AnimationEvent & event
         default: break;
     }
 }
-
 void ofxImageSequenceAtlas::setFrameRateDivisor(int _frameRateDivisor){
     frameRateDivisor = _frameRateDivisor;
     
@@ -156,22 +134,16 @@ void ofxImageSequenceAtlas::setFrameRateDivisor(int _frameRateDivisor){
 #pragma mark ATLAS
 void ofxImageSequenceAtlas::drawInBatch(TextureAtlasDrawer* atlas){
 	string temp = framesPath + frontPath + ofToString(frameCounter) + ".png";
-	//ofStringReplace(temp, "/", "\\");
-	//ofStringReplace(temp, "\\\\", "\\");
-	//textureFile = ofToDataPath(temp); 
 
 #ifdef TARGET_WIN32
 	ofStringReplace(textureFile, "data\\", "");
 #endif
-	//textureFile = "AttractGifs/\\0/\\frame-11.png";
     textureFile = framesPath+frontPath + ofToString(frameCounter) + ".png";
     
-    
-    //ofLogNotice() << "textureFile: " << textureFile;
-    atlas->drawTextureInBatch(textureFile, texQuad1);
+    atlas->drawTextureInBatch(textureFile, texQuad1, uid);
     if(doubleCrop)
     {
-        atlas->drawTextureInBatch(textureFile, texQuad2);
+        atlas->drawTextureInBatch(textureFile, texQuad2, uid);
     }
     
     if(debug)
@@ -261,29 +233,32 @@ void ofxImageSequenceAtlas::calculateCropLeft(ofVec2f cropPerc){
 }
 
 
-void ofxImageSequenceAtlas::calculateCropRight(ofVec2f cropPerc){
+void ofxImageSequenceAtlas::calculateCropRight(ofVec2f cropPerc1, ofVec2f cropPerc2){
     
     if(doubleCrop)
     {
-        float cropPercNewX = cropPerc.x/2;
-        ofVec2f cropSize = ofVec2f(sizeOrg.x*cropPercNewX, sizeOrg.y*cropPerc.y);
+        float cropPercNewX = cropPerc1.x/2;
+        ofVec2f cropSize = ofVec2f(sizeOrg.x*cropPercNewX, sizeOrg.y*cropPerc1.y);
         
         //Set up first quad
         ofRectangle r = ofRectangle(getPos().x, getPos().y, cropSize.x, cropSize.y);
         TextureAtlasDrawer::TexQuad tq = getParalelogramForRect(r, 1-cropPercNewX, false, false);
         texQuad1 = tq;
         
+        float cropPercNewX2 = cropPerc2.x/2;
+        ofVec2f cropSize2 = ofVec2f(sizeOrg.x*cropPercNewX2, sizeOrg.y*cropPerc2.y);
+        
         //Set up second quad
-        ofRectangle r2 = ofRectangle(getPos().x + sizeOrg.x/2, getPos().y, cropSize.x, cropSize.y);
-        TextureAtlasDrawer::TexQuad tq2 = getParalelogramForRect(r2, cropPercNewX, false, true);
+        ofRectangle r2 = ofRectangle(getPos().x + sizeOrg.x/2, getPos().y, cropSize2.x, cropSize2.y);
+        TextureAtlasDrawer::TexQuad tq2 = getParalelogramForRect(r2, cropPercNewX2, false, true);
         texQuad2 = tq2;
         
     } else
     {
         
-        ofVec2f cropSize = sizeOrg*cropPerc;
+        ofVec2f cropSize = sizeOrg*cropPerc1;
         ofRectangle r = ofRectangle(getPos().x, getPos().y, cropSize.x, cropSize.y);
-        TextureAtlasDrawer::TexQuad tq = getParalelogramForRect(r, 1-cropPerc.x, false, false);
+        TextureAtlasDrawer::TexQuad tq = getParalelogramForRect(r, 1-cropPerc1.x, false, false);
         
         texQuad1 = tq;
     }
@@ -345,3 +320,8 @@ ofVec2f ofxImageSequenceAtlas::getSize(){
     return size; 
 }
 
+#pragma mark GET
+bool ofxImageSequenceAtlas::getDoubleCrop()
+{
+    return doubleCrop;
+}

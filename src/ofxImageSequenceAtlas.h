@@ -38,7 +38,7 @@ public:
     ofxImageSequenceAtlas::States getState();
     
     // ATLAS //////////////////////////////////
-    void calculateCropRight(ofVec2f cropPerc);
+    void calculateCropRight(ofVec2f cropPerc1, ofVec2f cropPerc2);
     void calculateCropLeft(ofVec2f cropPerc);
     void calculateCropLeftRight(ofVec2f cropPerc);
     void drawInBatch(TextureAtlasDrawer* atlas);
@@ -79,6 +79,11 @@ public:
     //FRAMERATE
     void setFrameRateDivisor(int _frameRateDivisor);
     
+    //id
+    void setId(int _uid);
+    
+    // TWO CROPS
+    bool getDoubleCrop();
 private:
     
     // ATTRIBUTES //////////////////////////////////
@@ -106,9 +111,9 @@ private:
     //This is to put two crops into the same image.
     bool doubleCrop = true;
     bool debug = false;
-    
-    
     float widthPercDebug = 0.0;
+    float textCropPerc = 0.0f;
     
-    float textCropPerc = 0.0f; 
+    //id
+    int uid=0;
 };
