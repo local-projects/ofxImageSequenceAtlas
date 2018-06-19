@@ -64,13 +64,26 @@ void ofxImageSequenceAtlas::update(float dt){
         default: break;
     }
     
-
+    switch(animState){
+        case AnimState::IDLE: { break; }
+        case AnimState::REVEAL:{
+            reveal1.update(dt);
+            reveal2.update(dt);
+            break;
+        }
+        case AnimState::CLOSE_REVEAL: {
+            reveal1.update(dt);
+            reveal2.update(dt);
+            break;
+        }
+        default: break;
+    }
 }
 
 void ofxImageSequenceAtlas::drawDebug(){
     //ofDrawBitmapString("col: " + ofToString(column), pos.x, pos.y);
     ofDrawBitmapString("a: " + ofToString(animState)
-                       + "\n s: " + ofToString(state),
+                       + "\n uid: " + ofToString(uid),
                        pos.x, pos.y);
 }
 
@@ -80,29 +93,78 @@ void ofxImageSequenceAtlas::setMotionState(AnimState _animState){
     animState = _animState;
     
     switch(animState){
-        case AnimState::IDLE: { break; }
-        case AnimState::REVEAL:{ break; }
+        case AnimState::IDLE: {
+            animatingCrop1 = false;
+            animatingCrop2 = false;
+            break;
+        }
+        case AnimState::REVEAL:{
+            break;
+        }
         case AnimState::CLOSE_REVEAL: {
-            resetReveal(ofVec2f(reveal.val(), 1.0f), 0.0f);
+            
             break;
         }
         default: break;
     }
 }
 
-void ofxImageSequenceAtlas::resetReveal(ofVec2f fromTo, float delay){
-    reveal.reset(fromTo.x);
-    reveal.animateToAfterDelay(fromTo.y, delay);
+ofxImageSequenceAtlas::AnimState ofxImageSequenceAtlas::getMotionState(){
+    return animState;
+}
+
+void ofxImageSequenceAtlas::resetReveal1(ofVec2f fromTo, float delay){
+    
+    reveal1.reset(fromTo.x);
+    reveal1.animateToAfterDelay(fromTo.y, delay);
+    setMotionState(AnimState::REVEAL);
+    animatingCrop1 = true;
+}
+
+void ofxImageSequenceAtlas::resetReveal2(ofVec2f fromTo, float delay){
+    
+    reveal2.reset(fromTo.x);
+    reveal2.animateToAfterDelay(fromTo.y, delay);
+    setMotionState(AnimState::REVEAL);
+    animatingCrop2 = true;
+}
+
+void ofxImageSequenceAtlas::resetClose1(ofVec2f fromTo, float delay){
+    reveal1.reset(fromTo.x);
+    reveal1.animateToAfterDelay(fromTo.y, delay);
+    setMotionState(AnimState::CLOSE_REVEAL);
+}
+
+void ofxImageSequenceAtlas::resetClose2(ofVec2f fromTo, float delay){
+    reveal2.reset(fromTo.x);
+    reveal2.animateToAfterDelay(fromTo.y, delay);
+    setMotionState(AnimState::CLOSE_REVEAL);
 }
 
 void ofxImageSequenceAtlas::setupMotion(){
     // MOTION VARIABLES //////////////////////////////
-    reveal.reset(1.0);
-    reveal.setRepeatType(AnimRepeat::PLAY_ONCE);
-    reveal.setDuration(animationDuration);
-    reveal.setCurve(TANH);
+    reveal1.reset(1.0);
+    reveal1.setRepeatType(AnimRepeat::PLAY_ONCE);
+    reveal1.setDuration(animationDuration);
+    reveal1.setCurve(TANH);
     
-    ofAddListener(reveal.animFinished, this, &ofxImageSequenceAtlas::onRevealFinish);
+    reveal2.reset(1.0);
+    reveal2.setRepeatType(AnimRepeat::PLAY_ONCE);
+    reveal2.setDuration(animationDuration);
+    reveal2.setCurve(TANH);
+    
+    close1.reset(1.0);
+    close1.setRepeatType(AnimRepeat::PLAY_ONCE);
+    close1.setDuration(animationDuration);
+    close1.setCurve(TANH);
+    
+    close2.reset(1.0);
+    close2.setRepeatType(AnimRepeat::PLAY_ONCE);
+    close2.setDuration(animationDuration);
+    close2.setCurve(TANH);
+    
+    //Only need one b/c reveal1 and reveal2 should end at the same time
+    ofAddListener(reveal1.animFinished, this, &ofxImageSequenceAtlas::onRevealFinish);
 }
 
 void ofxImageSequenceAtlas::playSequence(int _startFrame, bool loop){
@@ -237,15 +299,15 @@ void ofxImageSequenceAtlas::calculateCropRight(ofVec2f cropPerc1, ofVec2f cropPe
     
     if(doubleCrop)
     {
-        float cropPercNewX = cropPerc1.x/2;
-        ofVec2f cropSize = ofVec2f(sizeOrg.x*cropPercNewX, sizeOrg.y*cropPerc1.y);
+        cropPercNewX1 = cropPerc1.x/2;
+        ofVec2f cropSize = ofVec2f(sizeOrg.x*cropPercNewX1, sizeOrg.y*cropPerc1.y);
         
         //Set up first quad
         ofRectangle r = ofRectangle(getPos().x, getPos().y, cropSize.x, cropSize.y);
-        TextureAtlasDrawer::TexQuad tq = getParalelogramForRect(r, 1-cropPercNewX, false, false);
+        TextureAtlasDrawer::TexQuad tq = getParalelogramForRect(r, 1-cropPercNewX1, false, false);
         texQuad1 = tq;
         
-        float cropPercNewX2 = cropPerc2.x/2;
+        cropPercNewX2 = cropPerc2.x/2;
         ofVec2f cropSize2 = ofVec2f(sizeOrg.x*cropPercNewX2, sizeOrg.y*cropPerc2.y);
         
         //Set up second quad
@@ -255,10 +317,10 @@ void ofxImageSequenceAtlas::calculateCropRight(ofVec2f cropPerc1, ofVec2f cropPe
         
     } else
     {
-        
-        ofVec2f cropSize = sizeOrg*cropPerc1;
+        cropPercNewX1 = cropPerc1.x;
+        ofVec2f cropSize = sizeOrg*cropPercNewX1;
         ofRectangle r = ofRectangle(getPos().x, getPos().y, cropSize.x, cropSize.y);
-        TextureAtlasDrawer::TexQuad tq = getParalelogramForRect(r, 1-cropPerc1.x, false, false);
+        TextureAtlasDrawer::TexQuad tq = getParalelogramForRect(r, 1-cropPercNewX1, false, false);
         
         texQuad1 = tq;
     }
@@ -320,8 +382,45 @@ ofVec2f ofxImageSequenceAtlas::getSize(){
     return size; 
 }
 
+ofVec2f ofxImageSequenceAtlas::getSizeOrg(){
+    return sizeOrg;
+}
+
+
+int ofxImageSequenceAtlas::getColumn(){
+    return column;
+}
+
+int ofxImageSequenceAtlas::getRow(){
+    return row;
+}
+
+void ofxImageSequenceAtlas::setAnimatingCrop1(bool _animatingCrop1){
+    animatingCrop1 = _animatingCrop1;
+}
+
+void ofxImageSequenceAtlas::setAnimatingCrop2(bool _animatingCrop2){
+    animatingCrop2 = _animatingCrop2;
+}
+
 #pragma mark GET
 bool ofxImageSequenceAtlas::getDoubleCrop()
 {
     return doubleCrop;
+}
+
+float ofxImageSequenceAtlas::getCropPercNewX1(){
+    return cropPercNewX1;
+}
+
+float ofxImageSequenceAtlas::getCropPercNewX2(){
+    return cropPercNewX2;
+}
+
+bool ofxImageSequenceAtlas::getAnimatingCrop1(){
+    return animatingCrop1;
+}
+
+bool ofxImageSequenceAtlas::getAnimatingCrop2(){
+    return animatingCrop2; 
 }

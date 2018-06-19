@@ -26,6 +26,9 @@ public:
     // ATTRIBUTES //////////////////////////////////
     ofVec2f getPos();
     ofVec2f getSize();
+    ofVec2f getSizeOrg();
+    int getColumn();
+    int getRow();
     
     // STATES //////////////////////////////////
     enum States{
@@ -56,11 +59,22 @@ public:
     float animationDuration = 1.0f;
     
     //reveal
-    ofxAnimatableFloat reveal;
-    void resetReveal(ofVec2f fromTo, float delay);
-    bool shouldReveal = false;
+    ofxAnimatableFloat reveal1;
+    ofxAnimatableFloat reveal2;
+    void resetReveal1(ofVec2f fromTo, float delay);
+    void resetReveal2(ofVec2f fromTo, float delay);
     bool left = false; 
     void onRevealFinish(ofxAnimatable::AnimationEvent & event);
+    bool getAnimatingCrop1();
+    bool getAnimatingCrop2();
+    void setAnimatingCrop1(bool _animatingCrop1);
+    void setAnimatingCrop2(bool _animatingCrop2);
+    
+    //close
+    ofxAnimatableFloat close1;
+    ofxAnimatableFloat close2;
+    void resetClose1(ofVec2f fromTo, float delay);
+    void resetClose2(ofVec2f fromTo, float delay);
     
     //Motion States
     enum AnimState{
@@ -70,11 +84,8 @@ public:
         NUM_ANIMATION_STATES
     };
     
-    AnimState animState = AnimState::IDLE;
     void setMotionState(AnimState _animState);
-    
-    int column = 0;
-    int row = 0;
+    AnimState getMotionState();
     
     //FRAMERATE
     void setFrameRateDivisor(int _frameRateDivisor);
@@ -84,12 +95,18 @@ public:
     
     // TWO CROPS
     bool getDoubleCrop();
+    float getCropPercNewX1();
+    float getCropPercNewX2();
+    
+    
 private:
     
     // ATTRIBUTES //////////////////////////////////
     ofVec2f pos = ofVec2f(0,0);
     ofVec2f size = ofVec2f(100,100);
     ofVec2f sizeOrg; //original size
+    int column = 0;
+    int row = 0;
     
     // STATES //////////////////////////////////
     States state = States::PLAY_LOOPING;
@@ -114,6 +131,19 @@ private:
     float widthPercDebug = 0.0;
     float textCropPerc = 0.0f;
     
+    //2 crops
+    float cropPercNewX2 = 1.0f;
+    float cropPercNewX1 = 1.0f;
+
+    //This is to handle the double crop!
+    //Need to do: organize double crop system
+    bool animatingCrop1 = false;
+    bool animatingCrop2 = false;
+    
     //id
     int uid=0;
+    
+    //Motion States
+    AnimState animState = AnimState::IDLE;
+    
 };
