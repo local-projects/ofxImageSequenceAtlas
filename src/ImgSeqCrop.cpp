@@ -16,14 +16,30 @@ ImgSeqCrop::~ImgSeqCrop(){
     
 }
 
-void ImgSeqCrop::setup(int _cropId){
+void ImgSeqCrop::setup(int _cropId, ofVec2f _pos){
     setupMotion();
-    cropId = _cropId; 
+    cropId = _cropId;
+    pos = _pos;
+    
+    //FADE STATE
+    fadeIn.reset(0.0);
+    fadeIn.setRepeatType(PLAY_ONCE);
+    fadeIn.setDuration(fadeDuration);
+    fadeIn.setCurve(TANH);
+    
+    fadeOut.reset(0.0);
+    fadeOut.setRepeatType(PLAY_ONCE);
+    fadeOut.setDuration(fadeDuration);
+    fadeOut.setCurve(TANH);
+    
+    ofAddListener(fadeIn.animFinished, this, &ImgSeqCrop::onFadeInFinish);
+    ofAddListener(fadeOut.animFinished, this, &ImgSeqCrop::onFadeOutFinish);
+    
 }
 
 void ImgSeqCrop::update(float dt){
     
-    switch(state){
+    switch(revevalState){
         case ImgSeqCrop::IDLE: {
             break;
         }
@@ -34,15 +50,58 @@ void ImgSeqCrop::update(float dt){
         }
         case ImgSeqCrop::CLOSE: {
             close.update(dt);
-            
+            blend.update(dt); 
             break;
         }
         default: break;
     }
+    
+    //Fade Durations
+    fadeIn.update(dt);
+    fadeOut.update(dt);
+    
+    switch(fadeState){
+        case ImgSeqCrop::FADE_IN: {
+            alpha = 255.0f * fadeIn.val();
+            
+            //ofLogNotice() << fadeIn.val();
+            break;
+        }
+        case ImgSeqCrop::FADE_OUT:{
+            alpha = 255.0f * fadeOut.val();
+            break;
+        }
+        case ImgSeqCrop::VISIBLE: {
+            alpha = 255.0f;
+            break;
+        }
+        default: break;
+    }
+    
+    if(frameCounter<numFrames-1 &&
+       !(frameRateCounter%frameRateDivisor)){
+        frameCounter++;
+    } else if(frameCounter == numFrames-1){
+        frameRateCounter = frameRateDivisor;
+        frameCounter = 1;
+    }
+    
+    frameRateCounter++;
+    
+    textureFile = framesPath+frontPath + ofToString(frameCounter) + ".png";
 }
 
 void ImgSeqCrop::draw(){
     
+}
+
+void ImgSeqCrop::drawInBatch(TextureAtlasDrawer* atlas){
+#ifdef TARGET_WIN32
+        ofStringReplace(textureFile, "data\\", "");
+#endif
+
+    atlas->drawTextureInBatch(textureFile, texQuad,  ofColor(255, alpha));
+
 }
 
 #pragma mark MOTION
@@ -52,10 +111,15 @@ void ImgSeqCrop::setupMotion(){
     reveal.setDuration(animationDuration);
     reveal.setCurve(TANH);
     
-    close.reset(1.0);
+    close.reset(0.0);
     close.setRepeatType(AnimRepeat::PLAY_ONCE);
     close.setDuration(animationDuration);
     close.setCurve(TANH);
+    
+    blend.reset(0.0);
+    blend.setRepeatType(AnimRepeat::PLAY_ONCE);
+    blend.setDuration(animationDuration);
+    blend.setCurve(TANH);
     
     ofAddListener(close.animFinished, this, &ImgSeqCrop::onCloseFinish);
     
@@ -63,24 +127,30 @@ void ImgSeqCrop::setupMotion(){
     //ofAddListener(reveal1.animFinished, this, &ofxImageSequenceAtlas::onRevealFinish);
 }
 
-void ImgSeqCrop::resetReveal(ofVec2f fromTo, float delay){
+void ImgSeqCrop::resetReveal(ofVec2f fromTo, float delay, float duration){
     reveal.reset(fromTo.x);
     reveal.animateToAfterDelay(fromTo.y, delay);
+    reveal.setDuration(duration);
     setAnimationState(ImgSeqCrop::REVEAL);
 }
 
-void ImgSeqCrop::resetClose(ofVec2f fromTo, float delay){
+void ImgSeqCrop::resetClose(ofVec2f fromTo, float delay, float duration){
     close.reset(fromTo.x);
     close.animateToAfterDelay(fromTo.y, delay);
+    close.setDuration(duration);
+    
+    blend.reset(0.0);
+    blend.animateToAfterDelay(1.0, delay);
+    blend.setDuration(duration);
     setAnimationState(ImgSeqCrop::CLOSE);
 }
 
 
 #pragma mark STATES
 void ImgSeqCrop::setAnimationState(ImgSeqCrop::AnimationStates _state){
-    state = _state;
+    revevalState = _state;
     
-    switch(state){
+    switch(revevalState){
         case ImgSeqCrop::IDLE: {
             break;
         }
@@ -98,13 +168,17 @@ void ImgSeqCrop::setAnimationState(ImgSeqCrop::AnimationStates _state){
 }
 
 ImgSeqCrop::AnimationStates ImgSeqCrop::getState(){
-    return state; 
+    return revevalState;
 }
 
 #pragma mark GET
 
 int ImgSeqCrop::getCropId(){
     return cropId;
+}
+
+ofVec2f ImgSeqCrop::getPos(){
+    return pos;
 }
 
 #pragma mark CALLBACKS
@@ -114,7 +188,23 @@ void ImgSeqCrop::onRevealFinish(ofxAnimatable::AnimationEvent & event){
 
 void ImgSeqCrop::onCloseFinish(ofxAnimatable::AnimationEvent & event){
     setAnimationState(IDLE);
+    close.reset(0.0f);
 }
+
+void ImgSeqCrop::onFadeInFinish(ofxAnimatable::AnimationEvent & event){
+    setFadeState(ImgSeqCrop::VISIBLE);
+}
+
+void ImgSeqCrop::onFadeOutFinish(ofxAnimatable::AnimationEvent & event){
+    setFadeState(ImgSeqCrop::FADE_IN);
+    framesPath = framesPathRef;
+    numFrames = numFramesRef; 
+    
+    //NEED TO DO: Sync this from master
+    frameCounter = 0;
+    frameRateCounter = frameRateDivisor;
+}
+
 
 #pragma mark SIDE
 void ImgSeqCrop::setLeftSide(bool _leftSide){
@@ -123,4 +213,78 @@ void ImgSeqCrop::setLeftSide(bool _leftSide){
 
 bool ImgSeqCrop::getLeftSide(){
     return leftSide;
+}
+
+#pragma mark CROP PERCENT
+void ImgSeqCrop::setCropPerc(float _cropPerc){
+    cropPerc = _cropPerc; 
+}
+
+float ImgSeqCrop::getCropPerc(){
+    return cropPerc;
+}
+
+#pragma mark FILEPATHS
+
+void ImgSeqCrop::setFramesPath(string _framesPath){
+    #ifdef TARGET_WIN32
+        framesPathRef = _framesPath + "\\";
+    #else
+        framesPathRef = _framesPath;
+    
+    #endif
+    
+    setFadeState(ImgSeqCrop::FADE_OUT);
+    
+}
+
+void ImgSeqCrop::setFrameCounter(int _frameCounter){
+    frameCounter = _frameCounter;
+}
+
+string ImgSeqCrop::getTextureFile()
+{
+    return textureFile; 
+}
+
+#pragma mark NUM FRAMES
+void ImgSeqCrop::setNumFrames(int _numFrames){
+    numFramesRef = _numFrames;
+    
+    
+}
+
+#pragma mark FRAME RATE
+void ImgSeqCrop::setFrameRateDivisor(int _frameRateDivisor){
+    frameRateDivisor = _frameRateDivisor; 
+}
+
+#pragma mark ANIMATION STATE
+void ImgSeqCrop::setFadeState(FadeStates _fadeState){
+    fadeState = _fadeState;
+    
+    switch(fadeState){
+        case ImgSeqCrop::FADE_IN: {
+            fadeIn.animateFromTo(0.0f, 1.0f);
+            transition = true; 
+            break;
+        }
+        case ImgSeqCrop::FADE_OUT:{
+            fadeOut.animateFromTo(1.0f, 0.0f);
+            transition = true;
+            break;
+        }
+        case ImgSeqCrop::VISIBLE: {
+            alpha = 255.0f;
+            //transition = false;
+            break;
+        }
+        default: break;
+    }
+    
+}
+
+bool ImgSeqCrop::getTransition()
+{
+    return transition;
 }

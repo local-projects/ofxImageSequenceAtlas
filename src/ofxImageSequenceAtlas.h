@@ -11,6 +11,7 @@
 #include "TextureAtlasDrawer.h"
 #include "ofxAnimatableFloat.h"
 #include "ofxRemoteUIServer.h"
+#include "ImgSeqCrop.h"
 
 class ofxImageSequenceAtlas{
 public:
@@ -44,51 +45,12 @@ public:
     void calculateCropRight(ofVec2f cropPerc1, ofVec2f cropPerc2);
     void calculateCropLeft(ofVec2f cropPerc);
     void calculateCropLeftRight(ofVec2f cropPerc);
-    void drawInBatch(TextureAtlasDrawer* atlas);
     void setTextureDimensions(TextureAtlasDrawer::TextureDimensions _td);
     TextureAtlasDrawer::TexQuad getParalelogramForRect(const ofRectangle & r,float widthPerc, float fromLeft, float fromMiddle);
-    TextureAtlasDrawer::TexQuad texQuad1;
-    TextureAtlasDrawer::TexQuad texQuad2;
+    vector<ImgSeqCrop*> crops;
     
     // FILEPATHS //////////////////////////////////
-    void setNumFrames(int _numFrames);
-    void setFramesPath(string _framesPath);
-    
-    // MOTION //////////////////////////////////
-    void setupMotion();
-    float animationDuration = 1.0f;
-    
-    //reveal
-    ofxAnimatableFloat reveal1;
-    ofxAnimatableFloat reveal2;
-    void resetReveal1(ofVec2f fromTo, float delay);
-    void resetReveal2(ofVec2f fromTo, float delay);
-    bool left = false; 
-    void onRevealFinish(ofxAnimatable::AnimationEvent & event);
-    bool getAnimatingCrop1();
-    bool getAnimatingCrop2();
-    void setAnimatingCrop1(bool _animatingCrop1);
-    void setAnimatingCrop2(bool _animatingCrop2);
-    
-    //close
-    ofxAnimatableFloat close1;
-    ofxAnimatableFloat close2;
-    void resetClose1(ofVec2f fromTo, float delay);
-    void resetClose2(ofVec2f fromTo, float delay);
-    
-    //Motion States
-    enum AnimState{
-        IDLE,
-        REVEAL,
-        CLOSE_REVEAL,
-        NUM_ANIMATION_STATES
-    };
-    
-    void setMotionState(AnimState _animState);
-    AnimState getMotionState();
-    
-    //FRAMERATE
-    void setFrameRateDivisor(int _frameRateDivisor);
+    void setFramesPath(int index, string _framesPath);
     
     //id
     void setId(int _uid);
@@ -114,16 +76,7 @@ private:
     // ATLAS //////////////////////////////////
     string textureFile;
     TextureAtlasDrawer::TextureDimensions td;
-    
-    // FRAMERATE //////////////////////////////////
-    int frameCounter = 0;
-    int frameRateDivisor = 2;
-    int frameRateCounter = frameRateDivisor;
-    
-    // FILEPATHS //////////////////////////////////
-    string frontPath = "frame-";
-    string framesPath = "imageSequences/wash4/";
-    int numFrames = 0;
+
     
     //This is to put two crops into the same image.
     bool doubleCrop = true;
@@ -142,8 +95,6 @@ private:
     
     //id
     int uid=0;
-    
-    //Motion States
-    AnimState animState = AnimState::IDLE;
+
     
 };
