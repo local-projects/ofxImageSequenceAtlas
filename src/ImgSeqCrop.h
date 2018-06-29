@@ -56,6 +56,8 @@ public:
     
     void setFadeState(FadeStates _fadeState);
     FadeStates getFadeState();
+    ofxAnimatableFloat fadeIn;
+    ofxAnimatableFloat fadeOut;
     
     // ATLAS //////////////////////////////////
     TextureAtlasDrawer::TexQuad texQuad;
@@ -75,6 +77,7 @@ public:
     // FILEPATHS //////////////////////////////////
     void setFramesPath(string _framesPath);
     void setFrameCounter(int _frameCounter);
+    int getFrameCounter(); 
     string getTextureFile();
     
     // NUMFRAMES //////////////////////////////////
@@ -82,9 +85,13 @@ public:
     
     //FRAMERATE
     void setFrameRateDivisor(int _frameRateDivisor);
-    
     bool getTransition();
+    void setTransition(bool _transition);
     
+    //If the crop is first or second
+    void setIsSecond(bool _second);
+    
+    string getFramesPathRef(); 
 private:
     // STATES //////////////////////////////////
     AnimationStates revevalState = IDLE;
@@ -92,8 +99,6 @@ private:
     // FADE STATE //////////////////////////////////
     FadeStates fadeState = VISIBLE;
     float alpha = 0.0f;
-    ofxAnimatableFloat fadeIn;
-    ofxAnimatableFloat fadeOut;
     float fadeDuration = 1.0f;
     
     void onFadeInFinish(ofxAnimatable::AnimationEvent & event);
@@ -126,6 +131,10 @@ private:
     int frameRateDivisor = 2;
     int frameRateCounter = frameRateDivisor;
     int uid = 0;
-    
+
+    //If the crop is transitioning
     bool transition = false;
+    
+    //If the crop is first or second
+    bool second = false;
 };

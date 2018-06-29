@@ -36,7 +36,17 @@ void ofxImageSequenceAtlas::setup(ofVec2f _pos, ofVec2f _size, int _column, int 
         (i == 0) ? cropPos = pos : cropPos = ofVec2f(pos.x + size.x/2, pos.y);
         temp->setup(i, cropPos);
         crops.push_back(temp);
+        
+        if(i == 1)
+        {
+            crops[i]->setIsSecond(true);
+        }
+        else if (i == 0 ) {
+            //The two crops need to always be in sync, and the way the system is set up. The second crop will fade out first. once the first crop is finishing fade out, we need to make sure the crops are in sync.
+            ofAddListener(crops[i]->fadeOut.animFinished, this, &ofxImageSequenceAtlas::onCropFadeOutFinish);
+        }
     }
+    
     
 }
 
@@ -243,5 +253,13 @@ float ofxImageSequenceAtlas::getCropPercNewX1(){
 
 float ofxImageSequenceAtlas::getCropPercNewX2(){
     return cropPercNewX2;
+}
+
+#pragma mark CALL BACKS
+void ofxImageSequenceAtlas::onCropFadeOutFinish(ofxAnimatable::AnimationEvent & event){
+    if(doubleCrop)
+    {
+        crops[0]->setFrameCounter(crops[1]->getFrameCounter());
+    }
 }
 

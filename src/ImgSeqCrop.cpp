@@ -181,6 +181,10 @@ ofVec2f ImgSeqCrop::getPos(){
     return pos;
 }
 
+int ImgSeqCrop::getFrameCounter(){
+    return frameCounter; 
+}
+
 #pragma mark CALLBACKS
 void ImgSeqCrop::onRevealFinish(ofxAnimatable::AnimationEvent & event){
     setAnimationState(REVEAL); 
@@ -201,8 +205,12 @@ void ImgSeqCrop::onFadeOutFinish(ofxAnimatable::AnimationEvent & event){
     numFrames = numFramesRef; 
     
     //NEED TO DO: Sync this from master
-    frameCounter = 0;
-    frameRateCounter = frameRateDivisor;
+    if(second)
+    {
+        frameCounter = 0;
+        frameRateCounter = frameRateDivisor;
+    }
+    
 }
 
 
@@ -266,7 +274,6 @@ void ImgSeqCrop::setFadeState(FadeStates _fadeState){
     switch(fadeState){
         case ImgSeqCrop::FADE_IN: {
             fadeIn.animateFromTo(0.0f, 1.0f);
-            transition = true; 
             break;
         }
         case ImgSeqCrop::FADE_OUT:{
@@ -287,4 +294,18 @@ void ImgSeqCrop::setFadeState(FadeStates _fadeState){
 bool ImgSeqCrop::getTransition()
 {
     return transition;
+}
+
+void ImgSeqCrop::setTransition(bool _transition){
+    transition = _transition; 
+}
+
+#pragma mark SECOND
+void ImgSeqCrop::setIsSecond(bool _second){
+    second = _second; 
+}
+
+#pragma mark DEBUG
+string ImgSeqCrop::getFramesPathRef(){
+    return framesPathRef; 
 }

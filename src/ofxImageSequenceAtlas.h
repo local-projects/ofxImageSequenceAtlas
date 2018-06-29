@@ -95,6 +95,8 @@ private:
     
     //id
     int uid=0;
-
+    
+    //call backs
+    void onCropFadeOutFinish(ofxAnimatable::AnimationEvent & event); 
     
 };
