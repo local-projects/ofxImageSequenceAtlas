@@ -34,7 +34,7 @@ void ofxImageSequenceAtlas::setup(ofVec2f _pos, ofVec2f _size, int _column, int 
         ofVec2f cropPos;
         
         (i == 0) ? cropPos = pos : cropPos = ofVec2f(pos.x + size.x/2, pos.y);
-        temp->setup(i, cropPos);
+        temp->setup(i, cropPos, ofVec2f(sizeOrg.x/2, sizeOrg.y));
         crops.push_back(temp);
         
         if(i == 1)
@@ -220,6 +220,7 @@ void ofxImageSequenceAtlas::setFramesPath(int index, string _framesPath){
 }
 
 #pragma mark ATTRIBUTES
+
 ofVec2f ofxImageSequenceAtlas::getPos(){
     return pos;
 }

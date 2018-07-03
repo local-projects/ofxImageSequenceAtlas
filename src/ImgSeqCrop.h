@@ -17,7 +17,7 @@ public:
     ImgSeqCrop();
     ~ImgSeqCrop();
     
-    void setup(int _cropId, ofVec2f _pos);
+    void setup(int _cropId, ofVec2f _pos, ofVec2f _sizeOrg);
     void update(float dt);
     void draw();
     void drawInBatch(TextureAtlasDrawer* atlas);
@@ -69,6 +69,7 @@ public:
     
     // ATTRIBUTES //////////////////////////////////
     ofVec2f getPos();
+    ofVec2f getCenter();
     
      // CROP PERCENT //////////////////////////////////
     void setCropPerc(float _cropPerc);
@@ -111,6 +112,7 @@ private:
     
     // ATTRIBUTES //////////////////////////////////
     ofVec2f pos;
+    ofVec2f sizeOrg;
     
     // CROP PERCENT //////////////////////////////////
     float cropPerc;

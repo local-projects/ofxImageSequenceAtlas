@@ -16,10 +16,11 @@ ImgSeqCrop::~ImgSeqCrop(){
     
 }
 
-void ImgSeqCrop::setup(int _cropId, ofVec2f _pos){
+void ImgSeqCrop::setup(int _cropId, ofVec2f _pos, ofVec2f _sizeOrg){
     setupMotion();
     cropId = _cropId;
     pos = _pos;
+    sizeOrg = _sizeOrg; 
     
     //FADE STATE
     fadeIn.reset(0.0);
@@ -179,6 +180,13 @@ int ImgSeqCrop::getCropId(){
 
 ofVec2f ImgSeqCrop::getPos(){
     return pos;
+}
+
+ofVec2f ImgSeqCrop::getCenter(){
+    ofVec2f center;
+    center.x = pos.x + sizeOrg.x/2;
+    center.y = pos.y + sizeOrg.y/2;
+    return center;
 }
 
 int ImgSeqCrop::getFrameCounter(){
