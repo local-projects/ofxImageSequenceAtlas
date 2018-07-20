@@ -92,7 +92,14 @@ public:
     //If the crop is first or second
     void setIsSecond(bool _second);
     
-    string getFramesPathRef(); 
+    string getFramesPathRef();
+    
+    void loopFrames();
+    
+     // Is this a sequence?
+    void setSequence(bool _sequence);
+    void setFileName(string _fileName);
+    
 private:
     // STATES //////////////////////////////////
     AnimationStates revevalState = IDLE;
@@ -139,4 +146,8 @@ private:
     
     //If the crop is first or second
     bool second = false;
+    
+    // Is this a sequence?
+    bool sequence = true;
+    string fileName = "";
 };

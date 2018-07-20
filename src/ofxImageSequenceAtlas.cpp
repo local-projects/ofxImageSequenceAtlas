@@ -23,11 +23,13 @@ void ofxImageSequenceAtlas::setup(ofVec2f _pos, ofVec2f _size, int _column, int 
     column = _column;
     row = _row;
     
-    RUI_SHARE_PARAM(widthPercDebug, 0, 1);
-    RUI_SHARE_PARAM(textCropPerc, 0, 1);
+    //RUI_SHARE_PARAM(widthPercDebug, 0, 1);
+    //RUI_SHARE_PARAM(textCropPerc, 0, 1);
     
     //set up crops
-    int numCrops = 2;
+    int numCrops;
+    
+    (doubleCrop) ? numCrops = 2 : numCrops = 1;
     for(int i=0; i<numCrops; i++)
     {
         ImgSeqCrop * temp = new ImgSeqCrop();
@@ -62,7 +64,10 @@ void ofxImageSequenceAtlas::update(float dt){
             break ;
         }
         case States::PLAY_LOOPING: {
-           
+            for(auto &crop : crops)
+            {
+                crop->loopFrames();
+            }
             break ;
         }
         case States::STOPPED: {break ;}
@@ -80,6 +85,14 @@ void ofxImageSequenceAtlas::drawDebug(){
     //ofDrawBitmapString("col: " + ofToString(column), pos.x, pos.y);
     ofDrawBitmapString("\n uid: " + ofToString(uid),
                        pos.x, pos.y);
+    
+    ofSetColor(ofColor::red);
+    ofNoFill();
+    
+    ofDrawRectangle(getPos().x, getPos().y, getSize().x, getSize().y);
+    
+    ofSetColor(ofColor::white);
+    ofFill();
 }
 
 TextureAtlasDrawer::TexQuad ofxImageSequenceAtlas::getParalelogramForRect(const ofRectangle & r,float widthPerc, float fromLeft, float fromMiddle){
@@ -112,6 +125,23 @@ TextureAtlasDrawer::TexQuad ofxImageSequenceAtlas::getParalelogramForRect(const 
         quad.texCoords.bl = ofVec2f(0, 1);
     }
 
+    return quad;
+}
+
+TextureAtlasDrawer::TexQuad ofxImageSequenceAtlas::getParalelogramForRect_Croped(const ofRectangle & r, float offset, float widthPerc){
+    
+    TextureAtlasDrawer::TexQuad quad;
+    
+    quad.verts.tl = ofVec3f(r.x , r.y);
+    quad.verts.tr = ofVec3f(r.x + r.width, r.y);
+    quad.verts.br = ofVec3f(r.x + r.width, r.y + r.height);
+    quad.verts.bl = ofVec3f(r.x, r.y + r.height);
+    
+    quad.texCoords.tl = ofVec2f(offset, 0);
+    quad.texCoords.tr = ofVec2f(offset + widthPerc, 0);
+    quad.texCoords.br = ofVec2f(offset + widthPerc, 1);
+    quad.texCoords.bl = ofVec2f(offset, 1);
+    
     return quad;
 }
 
@@ -240,6 +270,10 @@ int ofxImageSequenceAtlas::getColumn(){
 
 int ofxImageSequenceAtlas::getRow(){
     return row;
+}
+
+void ofxImageSequenceAtlas::setDoubleCrop(bool _doubleCrop){
+    doubleCrop = _doubleCrop;
 }
 
 #pragma mark GET

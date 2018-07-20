@@ -47,6 +47,9 @@ public:
     void calculateCropLeftRight(ofVec2f cropPerc);
     void setTextureDimensions(TextureAtlasDrawer::TextureDimensions _td);
     TextureAtlasDrawer::TexQuad getParalelogramForRect(const ofRectangle & r,float widthPerc, float fromLeft, float fromMiddle);
+    
+    TextureAtlasDrawer::TexQuad getParalelogramForRect_Croped(const ofRectangle & r, float offset, float widthPerc);
+    
     vector<ImgSeqCrop*> crops;
     
     // FILEPATHS //////////////////////////////////
@@ -59,7 +62,7 @@ public:
     bool getDoubleCrop();
     float getCropPercNewX1();
     float getCropPercNewX2();
-    
+    void setDoubleCrop(bool _doubleCrop);
     
 private:
     

@@ -79,17 +79,15 @@ void ImgSeqCrop::update(float dt){
         default: break;
     }
     
-    if(frameCounter<numFrames-1 &&
-       !(frameRateCounter%frameRateDivisor)){
-        frameCounter++;
-    } else if(frameCounter == numFrames-1){
-        frameRateCounter = frameRateDivisor;
-        frameCounter = 1;
+    if(sequence)
+    {
+        textureFile = framesPath+frontPath + ofToString(frameCounter) + ".png";
+    }
+    else
+    {
+        textureFile = fileName;
     }
     
-    frameRateCounter++;
-    
-    textureFile = framesPath+frontPath + ofToString(frameCounter) + ".png";
 }
 
 void ImgSeqCrop::draw(){
@@ -103,6 +101,19 @@ void ImgSeqCrop::drawInBatch(TextureAtlasDrawer* atlas){
 
     atlas->drawTextureInBatch(textureFile, texQuad,  ofColor(255, alpha));
 
+}
+
+#pragma mark LOOPING
+void ImgSeqCrop::loopFrames(){
+    if(frameCounter<numFrames-1 &&
+       !(frameRateCounter%frameRateDivisor)){
+        frameCounter++;
+    } else if(frameCounter == numFrames-1){
+        frameRateCounter = frameRateDivisor;
+        frameCounter = 1;
+    }
+    
+    frameRateCounter++;
 }
 
 #pragma mark MOTION
@@ -316,4 +327,13 @@ void ImgSeqCrop::setIsSecond(bool _second){
 #pragma mark DEBUG
 string ImgSeqCrop::getFramesPathRef(){
     return framesPathRef; 
+}
+
+#pragma mark SEQUENCE
+void ImgSeqCrop::setSequence(bool _sequence){
+    sequence = _sequence;
+}
+
+void ImgSeqCrop::setFileName(string _fileName){
+    fileName = _fileName; 
 }
