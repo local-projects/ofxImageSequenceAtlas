@@ -95,6 +95,12 @@ void ofxImageSequenceAtlas::drawDebug(){
     ofFill();
 }
 
+void ofxImageSequenceAtlas::drawRect()
+{
+    ofSetColor(ofColor::red, 100);
+    ofDrawRectangle(getPos().x, getPos().y, getSize().x, getSize().y);
+}
+
 TextureAtlasDrawer::TexQuad ofxImageSequenceAtlas::getParalelogramForRect(const ofRectangle & r,float widthPerc, float fromLeft, float fromMiddle){
     
    
@@ -128,7 +134,7 @@ TextureAtlasDrawer::TexQuad ofxImageSequenceAtlas::getParalelogramForRect(const 
     return quad;
 }
 
-TextureAtlasDrawer::TexQuad ofxImageSequenceAtlas::getParalelogramForRect_Croped(const ofRectangle & r, float offset, float widthPerc){
+TextureAtlasDrawer::TexQuad ofxImageSequenceAtlas::getParalelogramForRect_Croped(const ofRectangle & r, float widthPerc){
     
     TextureAtlasDrawer::TexQuad quad;
     
@@ -143,6 +149,10 @@ TextureAtlasDrawer::TexQuad ofxImageSequenceAtlas::getParalelogramForRect_Croped
     quad.texCoords.bl = ofVec2f(offset, 1);
     
     return quad;
+}
+
+void ofxImageSequenceAtlas::setOffset(float _offset){
+    offset = _offset;
 }
 
 void ofxImageSequenceAtlas::calculateCropLeftRight(ofVec2f cropPerc){

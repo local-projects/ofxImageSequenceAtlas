@@ -23,6 +23,7 @@ public:
     void playSequence(int _startFrame, bool loop);
     
     void drawDebug(); 
+    void drawRect();
     
     // ATTRIBUTES //////////////////////////////////
     ofVec2f getPos();
@@ -48,7 +49,7 @@ public:
     void setTextureDimensions(TextureAtlasDrawer::TextureDimensions _td);
     TextureAtlasDrawer::TexQuad getParalelogramForRect(const ofRectangle & r,float widthPerc, float fromLeft, float fromMiddle);
     
-    TextureAtlasDrawer::TexQuad getParalelogramForRect_Croped(const ofRectangle & r, float offset, float widthPerc);
+    TextureAtlasDrawer::TexQuad getParalelogramForRect_Croped(const ofRectangle & r, float widthPerc);
     
     vector<ImgSeqCrop*> crops;
     
@@ -63,6 +64,9 @@ public:
     float getCropPercNewX1();
     float getCropPercNewX2();
     void setDoubleCrop(bool _doubleCrop);
+    
+    // OFFSET
+    void setOffset(float _offset);
     
 private:
     
@@ -100,6 +104,9 @@ private:
     int uid=0;
     
     //call backs
-    void onCropFadeOutFinish(ofxAnimatable::AnimationEvent & event); 
+    void onCropFadeOutFinish(ofxAnimatable::AnimationEvent & event);
+    
+    // OFFSET
+    float offset = 0.0f;
     
 };

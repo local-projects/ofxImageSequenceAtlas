@@ -21,6 +21,7 @@ public:
     void update(float dt);
     void draw();
     void drawInBatch(TextureAtlasDrawer* atlas);
+    //void drawDebug();
     
     // MOTION //////////////////////////////////
     void setupMotion();
@@ -150,4 +151,6 @@ private:
     // Is this a sequence?
     bool sequence = true;
     string fileName = "";
+    
+
 };

@@ -103,6 +103,7 @@ void ImgSeqCrop::drawInBatch(TextureAtlasDrawer* atlas){
 
 }
 
+
 #pragma mark LOOPING
 void ImgSeqCrop::loopFrames(){
     if(frameCounter<numFrames-1 &&
