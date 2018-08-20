@@ -37,6 +37,7 @@ void ofxImageSequenceAtlas::setup(ofVec2f _pos, ofVec2f _size, int _column, int 
         
         (i == 0) ? cropPos = pos : cropPos = ofVec2f(pos.x + size.x/2, pos.y);
         temp->setup(i, cropPos, ofVec2f(sizeOrg.x/2, sizeOrg.y));
+        temp->setParentId(uid); 
         crops.push_back(temp);
         
         if(i == 1)
@@ -47,6 +48,7 @@ void ofxImageSequenceAtlas::setup(ofVec2f _pos, ofVec2f _size, int _column, int 
             //The two crops need to always be in sync, and the way the system is set up. The second crop will fade out first. once the first crop is finishing fade out, we need to make sure the crops are in sync.
             ofAddListener(crops[i]->fadeOut.animFinished, this, &ofxImageSequenceAtlas::onCropFadeOutFinish);
         }
+        
     }
     
     
@@ -256,7 +258,8 @@ void ofxImageSequenceAtlas::setState(States _state){
 
 
 void ofxImageSequenceAtlas::setFramesPath(int index, string _framesPath){
-    crops[index]->setFramesPath(_framesPath); 
+    crops[index]->setFramesPath(_framesPath);
+    
 }
 
 #pragma mark ATTRIBUTES

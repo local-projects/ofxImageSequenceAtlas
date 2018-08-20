@@ -99,8 +99,14 @@ void ImgSeqCrop::drawInBatch(TextureAtlasDrawer* atlas){
         ofStringReplace(textureFile, "data\\", "");
 #endif
 
-    atlas->drawTextureInBatch(textureFile, texQuad,  ofColor(255, alpha));
-
+    if(ofFile::doesFileExist(textureFile))
+    {
+       atlas->drawTextureInBatch(textureFile, texQuad,  ofColor(255, alpha));
+    }
+    else
+    {
+        ofLogError("ImgSeqCrop::drawInBatch") << textureFile << " does not exist" << " for parent crop " << parentUID <<  " and child crop id " << cropId << "!";
+    }
 }
 
 
@@ -190,6 +196,10 @@ int ImgSeqCrop::getCropId(){
     return cropId;
 }
 
+int ImgSeqCrop::setParentId(int _parentUID){
+    parentUID = _parentUID;
+}
+
 ofVec2f ImgSeqCrop::getPos(){
     return pos;
 }
@@ -261,8 +271,20 @@ void ImgSeqCrop::setFramesPath(string _framesPath){
         framesPathRef = _framesPath;
     
     #endif
+
     
-    setFadeState(ImgSeqCrop::FADE_OUT);
+    if(useFadeOut)
+    {
+        setFadeState(ImgSeqCrop::FADE_OUT);
+    }
+    else
+    {
+        framesPath = framesPathRef;
+        numFrames = numFramesRef;
+        
+        setFadeState(ImgSeqCrop::VISIBLE);
+    }
+    
     
 }
 
@@ -337,4 +359,10 @@ void ImgSeqCrop::setSequence(bool _sequence){
 
 void ImgSeqCrop::setFileName(string _fileName){
     fileName = _fileName; 
+}
+
+#pragma mark FADE OUT
+
+void ImgSeqCrop::setUseFadeOut(bool _useFadeOut){
+    useFadeOut = _useFadeOut;
 }

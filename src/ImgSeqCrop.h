@@ -12,6 +12,7 @@
 #include "ofxAnimatableFloat.h"
 #include "ofxRemoteUIServer.h"
 
+
 class ImgSeqCrop{
 public:
     ImgSeqCrop();
@@ -63,7 +64,9 @@ public:
     // ATLAS //////////////////////////////////
     TextureAtlasDrawer::TexQuad texQuad;
     
+    // ID
     int getCropId();
+    int setParentId(int _parentUID);
     
     void setLeftSide(bool _leftSide);
     bool getLeftSide();
@@ -100,6 +103,9 @@ public:
      // Is this a sequence?
     void setSequence(bool _sequence);
     void setFileName(string _fileName);
+    
+    // use fade out
+    void setUseFadeOut(bool _useFadeOut); 
     
 private:
     // STATES //////////////////////////////////
@@ -141,6 +147,7 @@ private:
     int frameRateDivisor = 2;
     int frameRateCounter = frameRateDivisor;
     int uid = 0;
+    int parentUID = 0;
 
     //If the crop is transitioning
     bool transition = false;
@@ -151,6 +158,10 @@ private:
     // Is this a sequence?
     bool sequence = true;
     string fileName = "";
+    
+    
+    // use fade out
+    bool useFadeOut = true;
     
 
 };
