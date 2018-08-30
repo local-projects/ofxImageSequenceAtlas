@@ -99,14 +99,14 @@ void ImgSeqCrop::drawInBatch(TextureAtlasDrawer* atlas){
         ofStringReplace(textureFile, "data\\", "");
 #endif
 
-    if(ofFile::doesFileExist(textureFile))
-    {
-       atlas->drawTextureInBatch(textureFile, texQuad,  ofColor(255, alpha));
-    }
-    else
-    {
-        ofLogError("ImgSeqCrop::drawInBatch") << textureFile << " does not exist" << " for parent crop " << parentUID <<  " and child crop id " << cropId << "!";
-    }
+    bool doesFileExist ;
+    
+    /*
+     Check for files kills the framerate
+     Need to do: add as debug
+     */
+    
+    atlas->drawTextureInBatch(textureFile, texQuad,  ofColor(255, alpha));
 }
 
 

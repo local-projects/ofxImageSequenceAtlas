@@ -91,7 +91,8 @@ void ofxImageSequenceAtlas::drawDebug(){
     ofSetColor(ofColor::red);
     ofNoFill();
     
-    ofDrawRectangle(getPos().x, getPos().y, getSize().x, getSize().y);
+    ofDrawRectangle(getPos().x, getPos().y, getSize().x/2, getSize().y/2);
+    ofDrawRectangle(getPos().x + getSize().x/2, getPos().y + getSize().y/2, getSize().x/2, getSize().y/2);
     
     ofSetColor(ofColor::white);
     ofFill();
