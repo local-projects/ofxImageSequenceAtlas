@@ -40,6 +40,21 @@ void ImgSeqCrop::setup(int _cropId, ofVec2f _pos, ofVec2f _sizeOrg){
 
 void ImgSeqCrop::update(float dt){
     
+    fadeIn.setDuration(fadeDuration);
+    fadeIn.setCurve(fadeCurve);
+    
+    fadeOut.setDuration(fadeDuration);
+    fadeOut.setCurve(fadeCurve);
+    
+    reveal.setDuration(revealDuration);
+    reveal.setCurve(revealCurve);
+
+    close.setDuration(closeDuration);
+    close.setCurve(closeCurve);
+
+    blend.setDuration(blendDuration);
+    blend.setCurve(blendCurve);
+    
     switch(revevalState){
         case ImgSeqCrop::IDLE: {
             break;
@@ -127,18 +142,18 @@ void ImgSeqCrop::loopFrames(){
 void ImgSeqCrop::setupMotion(){
     reveal.reset(1.0);
     reveal.setRepeatType(AnimRepeat::PLAY_ONCE);
-    reveal.setDuration(animationDuration);
-    reveal.setCurve(TANH);
+    reveal.setDuration(revealDuration);
+    reveal.setCurve(revealCurve);
     
     close.reset(0.0);
     close.setRepeatType(AnimRepeat::PLAY_ONCE);
-    close.setDuration(animationDuration);
-    close.setCurve(TANH);
+    close.setDuration(closeDuration);
+    close.setCurve(closeCurve);
     
     blend.reset(0.0);
     blend.setRepeatType(AnimRepeat::PLAY_ONCE);
-    blend.setDuration(animationDuration);
-    blend.setCurve(TANH);
+    blend.setDuration(blendDuration);
+    blend.setCurve(blendCurve);
     
     ofAddListener(close.animFinished, this, &ImgSeqCrop::onCloseFinish);
     
@@ -149,21 +164,39 @@ void ImgSeqCrop::setupMotion(){
 void ImgSeqCrop::resetReveal(ofVec2f fromTo, float delay, float duration){
     reveal.reset(fromTo.x);
     reveal.animateToAfterDelay(fromTo.y, delay);
-    reveal.setDuration(duration);
+    reveal.setDuration(revealDuration);
     setAnimationState(ImgSeqCrop::REVEAL);
 }
 
 void ImgSeqCrop::resetClose(ofVec2f fromTo, float delay, float duration){
     close.reset(fromTo.x);
     close.animateToAfterDelay(fromTo.y, delay);
-    close.setDuration(duration);
+    close.setDuration(closeDuration);
     
     blend.reset(0.0);
     blend.animateToAfterDelay(1.0, delay);
-    blend.setDuration(duration);
+    blend.setDuration(blendDuration);
     setAnimationState(ImgSeqCrop::CLOSE);
 }
 
+void ImgSeqCrop::setAnimationParams(float _fadeDuration,
+                        AnimCurve _fadeCurve,
+                        float _blendDuration,
+                        AnimCurve _blendCurve,
+                        float _closeDuration,
+                        AnimCurve _closeCurve,
+                        float _revealDuration,
+                        AnimCurve _revealCurve)
+{
+     fadeDuration = _fadeDuration;
+     fadeCurve = _fadeCurve;
+     blendDuration = _blendDuration;
+     blendCurve = _blendCurve;
+     closeDuration = _closeDuration;
+     closeCurve = _closeCurve;
+    revealDuration = _revealDuration;
+     revealCurve = _revealCurve;
+}
 
 #pragma mark STATES
 void ImgSeqCrop::setAnimationState(ImgSeqCrop::AnimationStates _state){

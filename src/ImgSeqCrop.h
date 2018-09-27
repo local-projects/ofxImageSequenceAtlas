@@ -61,6 +61,32 @@ public:
     ofxAnimatableFloat fadeIn;
     ofxAnimatableFloat fadeOut;
     
+    //animtaion
+    void setAnimationParams(float _fadeDuration,
+                            AnimCurve _fadeCurve,
+                            float _blendDuration,
+                            AnimCurve _blendCurve,
+                            float _closeDuration,
+                            AnimCurve _closeCurve,
+                            float _revealDuration,
+                            AnimCurve _revealCurve
+                            );
+    
+    
+    float fadeDuration =  1.0f;
+    AnimCurve fadeCurve = TANH;
+    
+    float blendDuration = 1.0f;
+    AnimCurve blendCurve = TANH;
+    
+    float closeDuration = 1.0f;
+    AnimCurve closeCurve = TANH;
+    
+    float revealDuration = 1.0f;
+    AnimCurve revealCurve = TANH;
+    
+    
+    
     // ATLAS //////////////////////////////////
     TextureAtlasDrawer::TexQuad texQuad;
     
@@ -105,7 +131,7 @@ public:
     void setFileName(string _fileName);
     
     // use fade out
-    void setUseFadeOut(bool _useFadeOut); 
+    void setUseFadeOut(bool _useFadeOut);
     
 private:
     // STATES //////////////////////////////////
@@ -114,10 +140,10 @@ private:
     // FADE STATE //////////////////////////////////
     FadeStates fadeState = VISIBLE;
     float alpha = 0.0f;
-    float fadeDuration = 1.0f;
-    
+
     void onFadeInFinish(ofxAnimatable::AnimationEvent & event);
     void onFadeOutFinish(ofxAnimatable::AnimationEvent & event);
+    
     
     // MOTION //////////////////////////////////
     float animationDuration = 1.0f;
