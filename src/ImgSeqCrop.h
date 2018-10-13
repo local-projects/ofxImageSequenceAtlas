@@ -92,7 +92,7 @@ public:
     
     // ID
     int getCropId();
-    int setParentId(int _parentUID);
+    void setParentId(int _parentUID);
     
     void setLeftSide(bool _leftSide);
     bool getLeftSide();

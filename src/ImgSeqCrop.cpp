@@ -229,7 +229,7 @@ int ImgSeqCrop::getCropId(){
     return cropId;
 }
 
-int ImgSeqCrop::setParentId(int _parentUID){
+void ImgSeqCrop::setParentId(int _parentUID){
     parentUID = _parentUID;
 }
 
